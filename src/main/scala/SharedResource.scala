@@ -25,7 +25,7 @@ class SharedResource extends Actor with ActorLogging {
       FIRST ! initialState
       become(working(FIRST, user, initialState) )
     case x: Message => sender ! Failure("resource is not ready yet 3")
-  }:Receive) orElse wrongMessageType
+  }: Receive) orElse wrongMessageType
 
   def working(OWNER: ActorRef, WAITER: ActorRef, state: Message):Receive = ({
     case message: Message =>
@@ -37,7 +37,7 @@ class SharedResource extends Actor with ActorLogging {
         case WAITER => sender ! Failure("resource is busy right now, wait for your turn")
       }
     case Join(_) => sender ! Failure("cant join more users")
-  }:Receive) orElse wrongMessageType
+  }: Receive) orElse wrongMessageType
 
   def wrongMessageType: Receive = {
     case _ => sender ! Failure("wrong message type")

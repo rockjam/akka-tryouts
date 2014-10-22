@@ -14,15 +14,12 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
   override def businessLogic = notReady
 
   def notReady: Receive = {
-    case TextFrame(text)  =>
-      text.utf8String match {
-        case x if x startsWith "join" =>
-          pool ! AcquireResource
-          context become waitingForResource
-        case _ =>
-          import ResponseJsonProtocol._
-          send(TextFrame(Failure("resource is not ready yet 1").toJson.toString))
-      }
+    case TextFrame(text) if (text utf8String) startsWith "join"  =>
+      pool ! AcquireResource
+      context become waitingForResource
+    case TextFrame(text) =>
+      import ResponseJsonProtocol._
+      send(TextFrame(Failure("resource is not ready yet 1").toJson.toString))
     case CloseFrame(_, _) => context stop self
   }
 
@@ -35,27 +32,24 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
   }
 
   def ready(shared: ActorRef): Receive = {
-    case TextFrame(text) =>
-      text.utf8String match {
-        case x if x.startsWith("join") =>
+    case TextFrame(text) if (text utf8String) startsWith "join"  =>
           import ResponseJsonProtocol._
           val failure = Failure("already acquired resource")
           send(TextFrame(failure.toJson.toString))
-        case x =>
-          import MessageJsonProtocol._
-          val message = x
-            .parseJson
-            .convertTo[Message]
-          shared ! message
-      }
-
+    case TextFrame(text) =>
+      import MessageJsonProtocol._
+      val message = text
+        .utf8String
+        .parseJson
+        .convertTo[Message]
+      shared ! message
     case m: Response =>
       import ResponseJsonProtocol._
       val json = m.toJson.toString
       send(TextFrame(json))
     case CloseFrame(_, _) => context stop self
 
-    //we dont expect these types
+    //we don't expect these types
     case x: BinaryFrame => println("1 " + x)
     case x: HttpRequest => println("2 " + x)
     case x: AnyRef => println("3 " + x)
