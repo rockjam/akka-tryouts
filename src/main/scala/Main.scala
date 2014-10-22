@@ -12,10 +12,6 @@ object Main extends App with SimpleRoutingApp {
   val server = system.actorOf(WebSocketServer.props(), "websockets")
   val resourcePool = system.actorOf(ResourcePool.props(), "resources")
 
-  import scala.concurrent.duration._
-  import scala.concurrent.ExecutionContext.Implicits.global
-  system.scheduler.schedule(5 seconds, 5 seconds, resourcePool, ResourcePool.Show)
-
   IO(UHttp) ! Http.Bind(server, "localhost", 9000)
 
 }
