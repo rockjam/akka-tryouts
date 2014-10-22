@@ -14,8 +14,8 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
   override def businessLogic = notReady
 
   def notReady: Receive = {
-    case frame: TextFrame =>
-      frame.payload.utf8String match {
+    case TextFrame(text)  =>
+      text.utf8String match {
         case x if x startsWith "join" =>
           pool ! AcquireResource
           context become waitingForResource
@@ -23,20 +23,20 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
           import ResponseJsonProtocol._
           send(TextFrame(Failure("resource is not ready yet 1").toJson.toString))
       }
-    case _: CloseFrame => context stop self
+    case CloseFrame(_, _) => context stop self
   }
 
   def waitingForResource: Receive = {
     case ResourceAcquired(res) => context become ready(res)
-    case _: CloseFrame => context stop self
+    case CloseFrame(_, _) => context stop self
     case _ =>
       import ResponseJsonProtocol._
       send(TextFrame(Failure("resource is not ready yet 2").toJson.toString))
   }
 
   def ready(shared: ActorRef): Receive = {
-    case frame: TextFrame =>
-      frame.payload.utf8String match {
+    case TextFrame(text) =>
+      text.utf8String match {
         case x if x.startsWith("join") =>
           import ResponseJsonProtocol._
           val failure = Failure("already acquired resource")
@@ -53,7 +53,7 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
       import ResponseJsonProtocol._
       val json = m.toJson.toString
       send(TextFrame(json))
-    case _: CloseFrame => context stop self
+    case CloseFrame(_, _) => context stop self
 
     //we dont expect these types
     case x: BinaryFrame => println("1 " + x)
