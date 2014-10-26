@@ -1,23 +1,35 @@
 import akka.actor.ActorRef
 import spray.json._
 
-trait Response
-
+//common messages
 case class Join(actor: ActorRef)
 
 case object AcquireResource
 
 case class ResourceAcquired(resource: ActorRef)
 
+case class Success(status: String = "success") extends Response
+
+case class Failure(message: String, status: String = "failure") extends Response
+
+trait Response
+
+//sharedResource messages
 case class Message(text:String, value:Int, status: String = "result") extends Response
 
 object MessageJsonProtocol extends DefaultJsonProtocol {
   implicit val messageFormat = jsonFormat3(Message)
 }
 
-case class Success(status: String = "success") extends Response
 
-case class Failure(message: String, status: String = "failure") extends Response
+//ticTacToe messages
+case class GameState(field: String, status: Status) extends Response
+
+case class GameMove(x:Int, y:Int, player:Char)
+
+object GameMoveJsonProtocol extends DefaultJsonProtocol {
+  implicit val gameMoveFormat = jsonFormat3(GameMove)
+}
 
 
 object ResponseJsonProtocol extends DefaultJsonProtocol {
@@ -27,6 +39,7 @@ object ResponseJsonProtocol extends DefaultJsonProtocol {
       case m: Message => m.toJson
       case s: Success => s.toJson
       case f: Failure => f.toJson
+      case g: GameState => JsArray(JsString(g.field), JsString(g.status.toString))
     }
   }
 

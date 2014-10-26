@@ -10,7 +10,7 @@ class ResourcePool extends Actor {
 
   def withoutFreeResource(busy: Set[ActorRef]): Receive = {
     case AcquireResource =>
-      val res = context.system.actorOf(SharedResource.props())
+      val res = context.system.actorOf(TicTacToe.props())
       sender ! ResourceAcquired(res)
       res ! Join(sender)
       context become withFreeResource(res, busy)
