@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Welcome to hell</title>
+    <script>
+        var ws;
+        var data;
+        function init() {
+            ws = new WebSocket("ws://localhost:9000/");
+            ws.onopen = function (evt) {
+                publishEvent(evt, "opened");
+                ws.send("join");
+            };
+            ws.onmessage = function (evt) {
+                publishEvent(evt, "message");
+                if (evt.data) {
+                    json = JSON.parse(evt.data);
+                    if (json.status == "failure") {
+                        console.log("something failed");
+                    }
+                    if (json.status == "result") {
+                        setTimeout(function () {
+                            data = json;
+                            data.value = data.value *2;
+                            data.text = data.text + "q";
+                            ws.send(JSON.stringify(data));
+                        }, 3000);
+                    }
+                }
+            };
+            ws.onclose = function (evt) {
+                publishEvent(evt, "close")
+            };
+        }
+        function publishEvent(evt, type) {
+            publish(function() {
+                return evt.data ? evt.data : ""
+            }(), type);
+        }
+        function publish(message, type) {
+            element = document.createElement("div");
+            element.innerHTML = type.toUpperCase() + ": " + message;
+            doc = document.getElementById("content");
+            doc.appendChild(element);
+        }
+
+        window.addEventListener("load", init, false);
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>

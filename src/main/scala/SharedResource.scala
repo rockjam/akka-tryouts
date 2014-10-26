@@ -1,10 +1,10 @@
-import akka.actor.{Props, ActorLogging, ActorRef, Actor}
+import akka.actor.{Actor, ActorRef, Props}
 
 object SharedResource {
   def props() = Props[SharedResource]
 }
 
-class SharedResource extends Actor with ActorLogging {
+class SharedResource extends Actor {
   import context._
 
   def initialState = Message("hello world", 2)

@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "io.spray" % "spray-client_2.11" % "1.3.1",
   "io.spray" % "spray-routing_2.11" % "1.3.1",
   "io.spray" % "spray-json_2.11" % "1.2.6",
-  "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3"
+  "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3",
+  "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
 )
 
 seq(Revolver.settings: _*)
