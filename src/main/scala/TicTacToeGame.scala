@@ -17,20 +17,20 @@ trait TicTacToeGame {
   }
   def score(field: String) = {
     def same (a: Char, b: Char, c: Char) = a != '-' && a == b && b == c
-    def checkHorizontal =
+    def horizontalWin =
       same(field(0), field(1), field(2)) ||
         same(field(3), field(4), field(5)) ||
         same(field(6), field(7), field(8))
-    def checkVertical =
+    def verticalWin =
       same(field(0), field(3), field(6)) ||
         same(field(1), field(4), field(7)) ||
         same(field(2), field(5), field(8))
-    def checkDiagonal =
+    def diagonalWin =
       same(field(0), field(4), field(8)) ||
         same(field(2), field(3), field(6))
     field.forall(a => a != '-') match {
       case true => Tie
-      case false => if (checkHorizontal || checkVertical || checkDiagonal) Win else Game
+      case false => if (horizontalWin || verticalWin || diagonalWin) Win else Game
     }
   }
 }

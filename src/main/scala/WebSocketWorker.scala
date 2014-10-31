@@ -37,7 +37,7 @@ class WebSocketWorker(val serverConnection: ActorRef) extends Actor with WebSock
           val failure = Failure("already acquired resource")
           send(TextFrame(failure.toJson.toString))
     case TextFrame(text) =>
-      import GameMoveJsonProtocol._
+      import GameMove._
       val message = text
         .utf8String
         .parseJson

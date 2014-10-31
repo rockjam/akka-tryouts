@@ -4,7 +4,6 @@ object TicTacToe {
   def props() = Props[TicTacToe]
 }
 
-
 class TicTacToe extends Actor with TicTacToeGame {
   import context._
 

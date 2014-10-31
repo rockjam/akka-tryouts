@@ -21,14 +21,14 @@ object MessageJsonProtocol extends DefaultJsonProtocol {
   implicit val messageFormat = jsonFormat3(Message)
 }
 
-
 //ticTacToe messages
 case class GameState(field: String, status: Status) extends Response
 
+//TODO не передавать player
 case class GameMove(x:Int, y:Int, player:Char)
 
-object GameMoveJsonProtocol extends DefaultJsonProtocol {
-  implicit val gameMoveFormat = jsonFormat3(GameMove)
+object GameMove extends DefaultJsonProtocol {
+  implicit val gameMoveFormat = jsonFormat3(GameMove.apply)
 }
 
 
@@ -39,7 +39,7 @@ object ResponseJsonProtocol extends DefaultJsonProtocol {
       case m: Message => m.toJson
       case s: Success => s.toJson
       case f: Failure => f.toJson
-      case g: GameState => JsArray(JsString(g.field), JsString(g.status.toString))
+      case g: GameState => JsObject("field" -> JsString(g.field), "status" -> JsString(g.status.toString))
     }
   }
 

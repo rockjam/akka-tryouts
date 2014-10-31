@@ -3,9 +3,23 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Tic Tac Toe</title>
+    <style>
+        #game-field {
+            background-color: red;
+        }
+        #game-field tr {
+            border: 1px solid black;
+            height: 50px;
+        }
+        #game-field td {
+            border: 1px solid black;
+            width: 50px;
+        }
+    </style>
     <script>
         var ws;
         var data;
+        var player;
         function init() {
             ws = new WebSocket("ws://localhost:9000/");
             ws.onopen = function (evt) {
@@ -14,10 +28,39 @@
             };
             ws.onmessage = function (evt) {
                 publishEvent(evt, "message");
+                json = JSON.parse(evt.data);
+                if(json.field) {
+                    drawField(json.field)
+                }
             };
             ws.onclose = function (evt) {
                 publishEvent(evt, "close")
             };
+            function bindClick() {
+                var trs = document.getElementsByTagName("tr");
+                for (i = 0; i < trs.length; i ++) {
+                    var tds = trs[i].children;
+                    for (j = 0; j < tds.length; j++) {
+                        tds[j].addEventListener("click", makeTurn(j,i));
+                    }
+                }
+            }
+            bindClick();
+        }
+        function drawField(field) {
+            var trs = document.getElementsByTagName("tr");
+            for (i = 0; i < trs.length; i ++) {
+                var tds = trs[i].children;
+                for (j = 0; j < tds.length; j++) {
+                    tds[j].innerHTML = field[i * 3 + j];
+                }
+            }
+        }
+        function makeTurn(x_move, y_move) {
+            return function aux() {
+                this.innerHTML = player;
+                ws.send(JSON.stringify({x:x_move, y:y_move, player:player}));
+            }
         }
         function publishEvent(evt, type) {
             publish(function() {
@@ -30,11 +73,30 @@
             doc = document.getElementById("content");
             doc.appendChild(element);
         }
-
         window.addEventListener("load", init, false);
     </script>
 </head>
 <body>
+<div id="game">
+    <table id="game-field">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+</div>
 <div id="content"></div>
 </body>
 </html>
