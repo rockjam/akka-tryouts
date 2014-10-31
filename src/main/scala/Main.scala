@@ -9,9 +9,14 @@ import spray.routing.SimpleRoutingApp
 object Main extends App with SimpleRoutingApp {
   implicit val system = ActorSystem("sockets")
 
-  val server = system.actorOf(WebSocketServer.props(), "websockets")
-  val resourcePool = system.actorOf(ResourcePool.props(), "resources")
+  import system._
+  val resourcePool = actorOf(ResourcePool.props(), "resources")
 
-  IO(UHttp) ! Http.Bind(server, "localhost", 9000)
+  IO(UHttp) ! Http.Bind(actorOf(Router.props(), "router"), "localhost", 9000)
+  IO(UHttp) ! Http.Bind(actorOf(WebSocketServer.props(), "websockets"), "localhost", 9001)
+
+  import scala.concurrent.duration._
+  scheduler.schedule(5 seconds, 5 seconds, resourcePool, ShowResources)
+
 
 }

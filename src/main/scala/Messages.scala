@@ -1,6 +1,8 @@
 import akka.actor.ActorRef
 import spray.json._
 
+case object ShowResources
+
 //common messages
 case class Join(actor: ActorRef)
 

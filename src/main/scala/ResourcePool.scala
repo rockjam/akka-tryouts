@@ -14,6 +14,7 @@ class ResourcePool extends Actor {
       sender ! ResourceAcquired(res)
       res ! Join(sender)
       context become withFreeResource(res, busy)
+    case ShowResources => println(busy)
     case _ => sender ! Failure("some message")//эти сообщения никак не обрабатываются
   }
 
@@ -22,6 +23,7 @@ class ResourcePool extends Actor {
       sender ! ResourceAcquired(free)
       free ! Join(sender)
       context become withoutFreeResource(busy + free)
+    case ShowResources => println(busy)
     case _ => sender ! Failure("some message")//эти сообщения никак не обрабатываются
   }
 

@@ -7,7 +7,7 @@
         var ws;
         var data;
         function init() {
-            ws = new WebSocket("ws://localhost:9000/");
+            ws = new WebSocket("ws://localhost:9001/");
             ws.onopen = function (evt) {
                 publishEvent(evt, "opened");
                 ws.send("join");
