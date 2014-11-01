@@ -1,5 +1,5 @@
 trait TicTacToeGame {
-  def makeMove(state: GameState, move: GameMove) = {
+  def makeMove(state: GameState, move: GameMove, player: Player) = {
     def calcIndex = move.y * 3 + move.x
     def canMakeMove = {
       def isFree = state.field(calcIndex) == '-'
@@ -10,7 +10,7 @@ trait TicTacToeGame {
         isFree
     }
     if (canMakeMove) {
-      val newField = state.field.updated(calcIndex, move.player)
+      val newField = state.field.updated(calcIndex, player.ch)
       GameState(newField, score(newField))
     } else
       GameState(state.field, WrongMove)

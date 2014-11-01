@@ -21,22 +21,28 @@ class TicTacToe extends Actor with TicTacToeGame {
   def waitingForUser(FIRST: ActorRef) = ({
     case Join(FIRST) => FIRST ! Failure("you have joined already")
     case Join(user) =>
+      val o = Player('o')
+      user ! o
       user ! Success()
+
+      val x = Player('x')
+      FIRST ! x
       FIRST ! initialState
-      become(working(FIRST, user, initialState) )
+
+      become(working(FIRST, x, user, o, initialState) )
     case _:Message => sender ! Failure("resource is not ready yet 3")
   }: Receive) orElse wrongMessageType
 
-  def working(OWNER: ActorRef, WAITER: ActorRef, current: GameState):Receive = ({
+  def working(OWNER: ActorRef, ownerSign: Player, WAITER: ActorRef, waiterSign: Player, current: GameState): Receive = ({
     case move: GameMove =>
       sender match {
         case OWNER =>
-          val newState = makeMove(current, move)
+          val newState = makeMove(current, move, ownerSign)
           newState.status match {
             case Game =>
               OWNER ! Success()
               WAITER ! newState
-              become(working(WAITER, OWNER, newState))
+              become(working(WAITER, waiterSign, OWNER, ownerSign, newState))
             case Tie =>
               OWNER ! newState
               WAITER ! newState
