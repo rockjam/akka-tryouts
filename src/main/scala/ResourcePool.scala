@@ -1,16 +1,16 @@
 import akka.actor.{ActorRef, Props, Actor}
 
 object ResourcePool {
-  def props() = Props[ResourcePool]
+  def props(resourceProps: Props) = Props(classOf[ResourcePool], resourceProps)
 }
 
-class ResourcePool extends Actor {
+class ResourcePool(resourceProps: Props) extends Actor {
 
   def receive = withoutFreeResource(Set())
 
   def withoutFreeResource(busy: Set[ActorRef]): Receive = {
     case AcquireResource =>
-      val res = context.system.actorOf(TicTacToe.props())
+      val res = context.system.actorOf(resourceProps)
       sender ! ResourceAcquired(res)
       res ! Join(sender)
       context become withFreeResource(res, busy)

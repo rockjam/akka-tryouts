@@ -12,7 +12,7 @@ class Router extends HttpServiceActor {
       getFromResource("ticTacToe.html")
     } ~
     path("some") {
-      getFromResource("some.html")
+      getFromResource("sharedResource.html")
     }
   }
 
