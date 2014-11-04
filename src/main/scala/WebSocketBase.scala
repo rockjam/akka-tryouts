@@ -6,6 +6,9 @@ import spray.json._
 trait WebSocketBase extends Actor with WebSocketServerWorker {
   def serverConnection: ActorRef
   def pool: ActorSelection
+  def businessLogicNoUpgrade: Receive
+
+  override def receive = handshaking orElse businessLogicNoUpgrade orElse closeLogic
 
   override def businessLogic = notReady
 

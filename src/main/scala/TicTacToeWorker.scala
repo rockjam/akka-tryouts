@@ -1,14 +1,22 @@
-import akka.actor.{ActorRef, Props}
+import akka.actor.{Kill, ActorRef, Props}
+import akka.io.Tcp.{Closed, PeerClosed}
 import spray.can.websocket.frame.{BinaryFrame, CloseFrame, TextFrame}
 import spray.http.HttpRequest
 import spray.json._
+import spray.routing.HttpServiceActor
 
 object TicTacToeWorker {
   def props(serverConnection: ActorRef) = Props(classOf[TicTacToeWorker], serverConnection)
 }
 
-class TicTacToeWorker(val serverConnection: ActorRef) extends WebSocketBase {
+class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor with WebSocketBase {
   override def pool = context actorSelection "akka://sockets/user/tic-tac-toe-resources"
+
+  override def businessLogicNoUpgrade = runRoute {
+    path("ticTacToe") {
+      getFromResource("ticTacToe.html")
+    }
+  }
 
   override def ready(shared: ActorRef): Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join"  =>
@@ -26,7 +34,9 @@ class TicTacToeWorker(val serverConnection: ActorRef) extends WebSocketBase {
       import ResponseJsonProtocol._
       val json = m.toJson
       send(TextFrame(json toString))
-    case CloseFrame(_, _) => context stop self
+    case CloseFrame(_, _) | PeerClosed | Closed =>
+      context stop shared
+      context stop self
 
     //we don't expect these types
     case x: BinaryFrame => println("1 " + x)

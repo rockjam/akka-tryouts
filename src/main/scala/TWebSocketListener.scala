@@ -1,26 +1,26 @@
 import akka.actor.{Actor, Props}
 import spray.can.Http
 
-object TTTWebSocketServer {
-  def props() = Props[TTTWebSocketServer]
+object TWebSocketListener {
+  def props() = Props[TWebSocketListener]
 }
 
-class TTTWebSocketServer extends Actor {
+class TWebSocketListener extends Actor {
   override def receive = {
-    case Http.Connected(remoteAddress, localAddress) =>
+    case _: Http.Connected =>
       val serverConnection = sender
       val conn = context.actorOf(TicTacToeWorker props serverConnection)
       serverConnection ! Http.Register(conn)
   }
 }
 
-object SharedResourceWebSocketServer {
-  def props() = Props[SharedResourceWebSocketServer]
+object SWebSocketListener {
+  def props() = Props[SWebSocketListener]
 }
 
-class SharedResourceWebSocketServer extends Actor {
+class SWebSocketListener extends Actor {
   override def receive = {
-    case Http.Connected(remoteAddress, localAddress) =>
+    case _: Http.Connected =>
       val serverConnection = sender
       val conn = context.actorOf(SharedResourceWorker props serverConnection)
       serverConnection ! Http.Register(conn)

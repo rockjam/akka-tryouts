@@ -1,14 +1,22 @@
 import akka.actor.{ActorRef, Props}
+import akka.io.Tcp.{Closed, PeerClosed}
 import spray.can.websocket.frame.{BinaryFrame, CloseFrame, TextFrame}
 import spray.http.HttpRequest
 import spray.json._
+import spray.routing.HttpServiceActor
 
 object SharedResourceWorker {
   def props(serverConnection: ActorRef) = Props(classOf[SharedResourceWorker], serverConnection)
 }
 
-class SharedResourceWorker(val serverConnection: ActorRef) extends WebSocketBase {
+class SharedResourceWorker(val serverConnection: ActorRef) extends HttpServiceActor with WebSocketBase {
   override def pool = context actorSelection "akka://sockets/user/shared-resources-resources"
+
+  override def businessLogicNoUpgrade = runRoute {
+    path("sharedResource") {
+      getFromResource("sharedResource.html")
+    }
+  }
 
   override def ready(shared: ActorRef): Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join"  =>
@@ -26,7 +34,9 @@ class SharedResourceWorker(val serverConnection: ActorRef) extends WebSocketBase
       import ResponseJsonProtocol._
       val json = m.toJson.toString
       send(TextFrame(json))
-    case _: CloseFrame => context stop self
+    case CloseFrame(_, _) | PeerClosed | Closed =>
+      context stop shared
+      context stop self
 
     //we dont expect these types
     case x: BinaryFrame => println("1 " + x)
