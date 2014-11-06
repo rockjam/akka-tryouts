@@ -1,4 +1,6 @@
-import akka.actor.{ActorSelection, Actor, ActorRef}
+package shared
+
+import akka.actor.{Actor, ActorRef, ActorSelection}
 import spray.can.websocket.WebSocketServerWorker
 import spray.can.websocket.frame.{CloseFrame, TextFrame}
 import spray.json._

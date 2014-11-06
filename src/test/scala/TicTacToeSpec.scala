@@ -1,4 +1,5 @@
 import org.scalatest.FlatSpec
+import tictactoe.{Game, Win, Tie, TicTacToeGame}
 
 class TicTacToeSpec extends FlatSpec with TicTacToeGame {
 
@@ -69,6 +70,16 @@ class TicTacToeSpec extends FlatSpec with TicTacToeGame {
           |oox"""))
     }
 
+  }
+
+  "Score on full winning field" should "be Win" in  {
+    assertResult(Win) {
+      score(field(
+      """xox
+        |oox
+        |oxx"""
+      ))
+    }
   }
 
 }

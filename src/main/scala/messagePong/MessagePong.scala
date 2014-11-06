@@ -1,10 +1,13 @@
-import akka.actor.{Actor, ActorRef, Props}
+package messagePong
 
-object SharedResource {
-  def props() = Props[SharedResource]
+import akka.actor.{Actor, ActorRef, Props}
+import shared._
+
+object MessagePong {
+  def props() = Props[MessagePong]
 }
 
-class SharedResource extends Actor {
+class MessagePong extends Actor {
   import context._
 
   def initialState = Message("hello world", 2)

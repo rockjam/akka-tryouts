@@ -1,5 +1,8 @@
+package shared
+
 import akka.actor.ActorRef
 import spray.json._
+import tictactoe.Status
 
 case object ShowResources
 

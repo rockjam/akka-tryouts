@@ -1,4 +1,7 @@
+package tictactoe
+
 import akka.actor.{Actor, ActorRef, Props}
+import shared._
 
 object TicTacToe {
   def props() = Props[TicTacToe]

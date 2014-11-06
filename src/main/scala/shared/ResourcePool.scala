@@ -1,4 +1,6 @@
-import akka.actor.{Terminated, ActorRef, Props, Actor}
+package shared
+
+import akka.actor.{Actor, ActorRef, Props, Terminated}
 
 object ResourcePool {
   def props(resourceProps: Props) = Props(classOf[ResourcePool], resourceProps)

@@ -1,3 +1,7 @@
+package tictactoe
+
+import shared._
+
 trait TicTacToeGame {
   def makeMove(state: GameState, move: GameMove, player: Player) = {
     def calcIndex = move.y * 3 + move.x
@@ -28,10 +32,8 @@ trait TicTacToeGame {
     def diagonalWin =
       same(field(0), field(4), field(8)) ||
         same(field(2), field(3), field(6))
-    field.forall(a => a != '-') match {
-      case true => Tie
-      case false => if (horizontalWin || verticalWin || diagonalWin) Win else Game
-    }
+    if (horizontalWin || verticalWin || diagonalWin) Win
+    else if (field.forall(a => a != '-')) Tie else Game
   }
 }
 
