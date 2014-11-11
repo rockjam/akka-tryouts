@@ -3,91 +3,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Tic Tac Toe</title>
-    <style>
-        #game-field {
-            background-color: red;
-        }
-        #game-field tr {
-            border: 1px solid black;
-            height: 50px;
-        }
-        #game-field td {
-            border: 1px solid black;
-            width: 50px;
-        }
-    </style>
-    <script>
-        var ws;
-        var player;
-        function init() {
-            ws = new WebSocket("ws://localhost:9001/");
-            ws.onopen = function (evt) {
-                publishEvent(evt, "opened");
-                ws.send("join");
-            };
-            ws.onmessage = ordinaryOnMessage;
-            ws.onclose = function (evt) {
-                publishEvent(evt, "close")
-            };
-            function bindClick() {
-                var trs = document.getElementsByTagName("tr");
-                for (i = 0; i < trs.length; i++) {
-                    var tds = trs[i].children;
-                    for (j = 0; j < tds.length; j++) {
-                        tds[j].addEventListener("click", makeTurn(j, i));
-                    }
-                }
-            }
-            bindClick();
-        }
-        function ordinaryOnMessage(evt) {
-            publishEvent(evt, "message");
-            json = JSON.parse(evt.data);
-            if (json.field) {
-                drawField(json.field)
-            }
-            if (json.ch) {
-                player = json.ch;
-            }
-        }
-        function waitingStatusOnMessage (elem) {
-            return function(evt) {
-                publishEvent(evt, "message");
-                json = JSON.parse(evt.data);
-                if (json.status == 'success' || json.status == 'Win') {
-                    elem.innerHTML = player;
-                }
-                ws.onmessage = ordinaryOnMessage;
-            }
-        }
-        function drawField(field) {
-            var trs = document.getElementsByTagName("tr");
-            for (i = 0; i < trs.length; i++) {
-                var tds = trs[i].children;
-                for (j = 0; j < tds.length; j++) {
-                    tds[j].innerHTML = field[i * 3 + j];
-                }
-            }
-        }
-        function makeTurn(x_move, y_move) {
-            return function aux() {
-                ws.onmessage = waitingStatusOnMessage(this);
-                ws.send(JSON.stringify({x: x_move, y: y_move}));
-            }
-        }
-        function publishEvent(evt, type) {
-            publish(function () {
-                return evt.data ? evt.data : ""
-            }(), type);
-        }
-        function publish(message, type) {
-            element = document.createElement("div");
-            element.innerHTML = type.toUpperCase() + ": " + message;
-            doc = document.getElementById("content");
-            doc.appendChild(element);
-        }
-        window.addEventListener("load", init, false);
-    </script>
+    <link rel="stylesheet" href="css/ticTacToe.css" type="text/css">
+    <script src="js/ticTacToe.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="game">
@@ -109,6 +26,9 @@
         </tr>
     </table>
 </div>
-<div id="content"></div>
+<div id="content">
+    <div id="sign">&nbsp;</div>
+    <div id="messages"></div>
+</div>
 </body>
 </html>

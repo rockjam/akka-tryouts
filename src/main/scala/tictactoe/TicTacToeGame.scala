@@ -31,7 +31,7 @@ trait TicTacToeGame {
         same(field(2), field(5), field(8))
     def diagonalWin =
       same(field(0), field(4), field(8)) ||
-        same(field(2), field(3), field(6))
+        same(field(2), field(4), field(6))
     if (horizontalWin || verticalWin || diagonalWin) Win
     else if (field.forall(a => a != '-')) Tie else Game
   }

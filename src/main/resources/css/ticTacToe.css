@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+#game-field {
+    border: 4px solid darkslategray;
+    border-radius: 5%;
+    margin: 0 auto;
+    width: 400px;
+    height: 400px;
+    background-color: darkgrey;
+}
+#game-field tr {
+    height: 100px;
+}
+#game-field td {
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid darkslategrey;
+    width: 100px;
+}
+#game {
+    margin-top: 200px;
+    text-align: center;
+    width: 100%;
+}
+body {
+    background-color: beige;
+}
+#content {
+    width: 400px;
+    height: 50px;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 20px;
+    font-family: monospace;
+}
+#sign {
+    float: left;
+    position: relative;
+    background-color: #476a80;
+    width: 50px;
+    height: 100%;
+    border-radius: 10px;
+}
+#messages {
+    float: right;
+    position: relative;
+    width: 349px;
+    height: 100%;
+    background-color: #476a80;
+    border-radius: 10px;
+}
