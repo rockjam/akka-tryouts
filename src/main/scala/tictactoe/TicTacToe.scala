@@ -18,7 +18,7 @@ class TicTacToe extends Actor with TicTacToeGame {
     case Join(user) =>
       user ! Success()
       become(waitingForUser(user))
-    case _:Message => sender ! Failure("resource is not ready yet")
+    case _:GameMove => sender ! Failure("resource is not ready yet")
   }: Receive) orElse wrongMessageType
 
   def waitingForUser(FIRST: ActorRef) = ({
@@ -33,7 +33,7 @@ class TicTacToe extends Actor with TicTacToeGame {
       FIRST ! initialState
 
       become(working(FIRST, x, user, o, initialState) )
-    case _:Message => sender ! Failure("resource is not ready yet 3")
+    case _:GameMove => sender ! Failure("resource is not ready yet 3")
   }: Receive) orElse wrongMessageType
 
   def working(OWNER: ActorRef, ownerSign: Player, WAITER: ActorRef, waiterSign: Player, current: GameState): Receive = ({

@@ -30,3 +30,16 @@ class SWebSocketListener extends Actor {
       serverConnection ! Http.Register(conn)
   }
 }
+
+object CWebSocketListener {
+  def props() = Props[CWebSocketListener]
+}
+
+class CWebSocketListener extends Actor {
+  override def receive = {
+    case _: Http.Connected =>
+      val serverConnection = sender
+      val conn = context.actorOf(MessagePongWorker props serverConnection)
+      serverConnection ! Http.Register(conn)
+  }
+}

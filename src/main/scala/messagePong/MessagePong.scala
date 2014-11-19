@@ -10,8 +10,6 @@ object MessagePong {
 class MessagePong extends Actor {
   import context._
 
-  def initialState = Message("hello world", 2)
-
   def receive = notReady
 
   def notReady = ({
@@ -24,6 +22,7 @@ class MessagePong extends Actor {
   def waitingForUser(FIRST: ActorRef) = ({
     case Join(FIRST) => FIRST ! Failure("you have joined already")
     case Join(user) =>
+      val initialState = Message("ping", 0)
       user ! Success()
       FIRST ! initialState
       become(working(FIRST, user, initialState) )

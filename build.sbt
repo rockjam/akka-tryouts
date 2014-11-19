@@ -3,7 +3,9 @@ version := "1.0"
 sbtVersion := "0.13.7"
 scalaVersion := "2.11.4"
 mainClass := Some("Main")
+incOptions := incOptions.value.withNameHashing(true)
 scalacOptions ++= Seq(
+  "-Ydelambdafy:method",
   "-target:jvm-1.7",
   "-feature",
   "-language:implicitConversions",
@@ -13,7 +15,7 @@ resolvers ++=  Seq(
   "spray repo" at "http://repo.spray.io/"
 )
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" % "akka-actor_2.11" % "2.3.6",
+  "com.typesafe.akka" % "akka-actor_2.11" % "2.3.7",
   "io.spray" % "spray-can_2.11" % "1.3.2",
   "io.spray" % "spray-routing_2.11" % "1.3.2",
   "io.spray" % "spray-json_2.11" % "1.3.1",

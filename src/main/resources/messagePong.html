@@ -22,8 +22,8 @@
                     if (json.status == "result") {
                         setTimeout(function () {
                             data = json;
-                            data.value = data.value *2;
-                            data.text = data.text + "q";
+                            data.value = data.value + 1;
+                            data.text = data.text.toLowerCase() == "ping" ? "pong" : "ping";
                             ws.send(JSON.stringify(data));
                         }, 3000);
                     }
