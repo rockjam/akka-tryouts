@@ -10,7 +10,7 @@ object TicTacToe {
 class TicTacToe extends Actor with TicTacToeGame {
   import context._
 
-  def initialState = GameState("---------", New)
+  val initialState = GameState("---------", New)
 
   def receive = notReady
 
@@ -31,6 +31,7 @@ class TicTacToe extends Actor with TicTacToeGame {
       val x = Player('x')
       FIRST ! x
       FIRST ! initialState
+      context.system.eventStream.publish(ObservableState(self, initialState))
 
       become(working(FIRST, x, user, o, initialState) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
@@ -41,6 +42,9 @@ class TicTacToe extends Actor with TicTacToeGame {
       sender match {
         case OWNER =>
           val newState = makeMove(current, move, ownerSign)
+          if (newState.status != WrongMove) {
+            context.system.eventStream.publish(ObservableState(self, newState))
+          }
           newState.status match {
             case Game =>
               OWNER ! Success()

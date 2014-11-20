@@ -31,10 +31,8 @@ class Cursors extends Actor{
     case coord: Coordinates =>
       sender match {
         case FIRST =>
-          println(s"FIRST $coord")
           SECOND ! coord
         case SECOND =>
-          println(s"SECOND $coord")
           FIRST ! coord
       }
     case Join(_) => sender ! Failure("cant join more users")
