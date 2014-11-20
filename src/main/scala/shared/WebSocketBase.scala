@@ -16,6 +16,8 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
 
   override def businessLogic = notReady
 
+  def convertRequest[T >: Response](text: String): T
+
   def notReady: Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join"  =>
       pool ! AcquireResource
@@ -33,8 +35,6 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
       import ResponseJsonProtocol._
       send(TextFrame(Failure("resource is not ready yet 2").toJson.toString))
   }
-
-  def convertRequest[T >: Response](text: String): T
 
   def ready(shared: ActorRef): Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join" =>
