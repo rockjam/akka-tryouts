@@ -4,6 +4,9 @@ sbtVersion := "0.13.7"
 scalaVersion := "2.11.4"
 mainClass := Some("Main")
 incOptions := incOptions.value.withNameHashing(true)
+updateOptions := updateOptions.value.withCachedResolution(true)
+import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
+promptTheme := Scalapenos
 scalacOptions ++= Seq(
   "-Ydelambdafy:method",
   "-target:jvm-1.7",
