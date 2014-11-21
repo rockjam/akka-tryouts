@@ -60,6 +60,7 @@ class TicTacToe extends Actor with TicTacToeGame {
               become(gameOver(newState))
             case WrongMove =>
               OWNER ! newState
+            case _ => throw new Error("inconsistent state")
           }
         case WAITER => sender ! Failure("resource is busy right now, wait for your turn")
       }
