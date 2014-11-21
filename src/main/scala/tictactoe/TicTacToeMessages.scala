@@ -1,6 +1,5 @@
 package tictactoe
 
-import akka.actor.ActorRef
 import shared.Response
 import spray.json._
 
@@ -10,12 +9,17 @@ case class Player(ch:Char) extends Response
 
 case class GameMove(x:Int, y:Int) extends Response
 
-case class ObservableState(subject:ActorRef, state:GameState)
+case class ObservableState(id:String, field:String, state:ViewState, message:String)
+
+sealed trait ViewState extends DefaultJsonProtocol
+case object InProgress extends ViewState
+case object GameOver extends ViewState
+
+
 
 object ObservableState extends DefaultJsonProtocol {
   implicit object ObservableStateJsonFormat extends RootJsonWriter[ObservableState] {
     def write(s:ObservableState) =
-      JsObject("subject" -> JsString(s.subject.path.name),
-        "state" -> JsObject("field" -> JsString(s.state.field), "status" -> JsString(s.state.status.toString)))
+      JsObject("id" -> JsString(s.id), "field" -> JsString(s.field), "state" -> JsString(s.state.toString), "message" -> JsString(s.message))
   }
 }

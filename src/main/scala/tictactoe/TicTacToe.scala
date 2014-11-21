@@ -31,7 +31,7 @@ class TicTacToe extends Actor with TicTacToeGame {
       val x = Player('x')
       FIRST ! x
       FIRST ! initialState
-      context.system.eventStream.publish(ObservableState(self, initialState))
+      context.system.eventStream.publish(ObservableState(self.path.name, initialState.field, InProgress, "Game bagan"))
 
       become(working(FIRST, x, user, o, initialState) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
@@ -43,7 +43,14 @@ class TicTacToe extends Actor with TicTacToeGame {
         case OWNER =>
           val newState = makeMove(current, move, ownerSign)
           if (newState.status != WrongMove) {
-            context.system.eventStream.publish(ObservableState(self, newState))
+            context.system.eventStream.publish(ObservableState(
+              self.path.name,
+              newState.field,
+              newState.status match {
+                case Tie | Win | Lose => GameOver
+                case Game | New => InProgress
+              },
+              "Message"))
           }
           newState.status match {
             case Game =>

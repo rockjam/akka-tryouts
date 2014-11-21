@@ -1,7 +1,5 @@
 package tictactoe
 
-import shared._
-
 trait TicTacToeGame {
   def makeMove(state: GameState, move: GameMove, player: Player) = {
     def calcIndex = move.y * 3 + move.x

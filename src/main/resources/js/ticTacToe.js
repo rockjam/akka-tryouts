@@ -69,7 +69,7 @@ function drawField(field) {
     for (i = 0; i < trs.length; i++) {
         var tds = trs[i].children;
         for (j = 0; j < tds.length; j++) {
-            visualize(tds[j],field[i * 3 + j]);
+            visualize(tds[j], field[i * 3 + j]);
         }
     }
 }
