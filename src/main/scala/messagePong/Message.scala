@@ -1,5 +1,5 @@
 package messagePong
 
-import shared.Response
+import shared.Exchange
 
-case class Message(text:String, value:Int, status: String = "result") extends Response
+case class Message(text:String, value:Int, status: String = "result") extends Exchange

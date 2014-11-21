@@ -1,17 +1,17 @@
-package observer
+package viewer
 
 import akka.actor.{ActorRef, Props}
 import spray.can.websocket.WebSocketServerWorker
 import spray.can.websocket.frame.TextFrame
 import spray.json._
 import spray.routing.HttpServiceActor
-import tictactoe.ObservableState
+import tictactoe.GameView
 
-object Subscriber {
-  def props(serverConnection: ActorRef) = Props(classOf[Subscriber], serverConnection)
+object Viewer {
+  def props(serverConnection: ActorRef) = Props(classOf[Viewer], serverConnection)
 }
 
-class Subscriber(val serverConnection:ActorRef) extends HttpServiceActor with WebSocketServerWorker {
+class Viewer(val serverConnection:ActorRef) extends HttpServiceActor with WebSocketServerWorker {
 
   override def receive = handshaking orElse businessLogicNoUpgrade orElse closeLogic
 
@@ -37,8 +37,8 @@ class Subscriber(val serverConnection:ActorRef) extends HttpServiceActor with We
   }
 
   override def businessLogic = {
-    case x:ObservableState =>
-      import ObservableState._
+    case x:GameView =>
+      import GameView._
       send(TextFrame(x.toJson.toString))
   }
 

@@ -1,5 +1,5 @@
 package cursors
 
-import shared.Response
+import shared.Exchange
 
-case class Coordinates(x:Int, y:Int) extends Response
+case class Coordinates(x:Int, y:Int) extends Exchange

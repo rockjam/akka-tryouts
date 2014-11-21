@@ -18,7 +18,6 @@ class ResourcePool(resourceProps: Props) extends Actor {
       res ! Join(sender)
       context become withFreeResource(res, busy)
     case Terminated(actor) => context become withoutFreeResource(busy - actor)
-    case ShowResources => println(busy)
     case _ => sender ! Failure("some message")//эти сообщения никак не обрабатываются
   }
 
@@ -28,7 +27,6 @@ class ResourcePool(resourceProps: Props) extends Actor {
       free ! Join(sender)
       context become withoutFreeResource(busy + free)
     case Terminated(actor) => context become withFreeResource(free, busy - actor)
-    case ShowResources => println(busy)
     case _ => sender ! Failure("some message")//эти сообщения никак не обрабатываются
   }
 

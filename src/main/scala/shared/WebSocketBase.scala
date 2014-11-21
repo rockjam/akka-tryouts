@@ -16,14 +16,14 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
 
   override def businessLogic = notReady
 
-  def convertRequest[T >: Response](text: String): T
+  def convertRequest[T >: Exchange](text: String): T
 
   def notReady: Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join"  =>
       pool ! AcquireResource
       context become waitingForResource
     case TextFrame(_) =>
-      import ResponseJsonProtocol._
+      import ExchangeJsonProtocol._
       send(TextFrame(Failure("resource is not ready yet 1").toJson.toString))
     case CloseFrame(_, _) => context stop self
   }
@@ -32,19 +32,19 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
     case ResourceAcquired(res) => context become ready(res)
     case CloseFrame(_, _) => context stop self
     case _ =>
-      import ResponseJsonProtocol._
+      import ExchangeJsonProtocol._
       send(TextFrame(Failure("resource is not ready yet 2").toJson.toString))
   }
 
   def ready(shared: ActorRef): Receive = {
     case TextFrame(text) if (text utf8String) startsWith "join" =>
-      import ResponseJsonProtocol._
+      import ExchangeJsonProtocol._
       val failure = Failure("already acquired resource")
       send(TextFrame(failure.toJson.toString))
     case TextFrame(text) =>
       shared ! convertRequest(text utf8String)
-    case m: Response =>
-      import ResponseJsonProtocol._
+    case m: Exchange =>
+      import ExchangeJsonProtocol._
       val json = m.toJson
       send(TextFrame(json toString))
     case CloseFrame(_, _) | PeerClosed | Closed =>

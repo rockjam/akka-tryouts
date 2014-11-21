@@ -5,10 +5,10 @@ import messagePong.Message
 import spray.json._
 import tictactoe.{GameMove, GameState, Player}
 
-object ResponseJsonProtocol extends DefaultJsonProtocol {
+object ExchangeJsonProtocol extends DefaultJsonProtocol {
 
-  implicit object ResponseJsonWriter extends RootJsonWriter[Response] {
-    def write(input: Response) = input match {
+  implicit object ExchangeJsonWriter extends RootJsonWriter[Exchange] {
+    def write(input: Exchange) = input match {
       case m: Message => m.toJson
       case s: Success => s.toJson
       case f: Failure => f.toJson

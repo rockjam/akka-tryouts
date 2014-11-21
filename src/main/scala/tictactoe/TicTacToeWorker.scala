@@ -33,8 +33,8 @@ class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor w
     }
   }
 
-  override def convertRequest[T >: Response](text: String): T = {
-    import shared.ResponseJsonProtocol._
+  override def convertRequest[T >: Exchange](text: String): T = {
+    import shared.ExchangeJsonProtocol._
     text.parseJson.convertTo[GameMove]
   }
 

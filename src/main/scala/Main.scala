@@ -2,12 +2,12 @@ import akka.actor.ActorSystem
 import akka.io.IO
 import cursors.Cursors
 import messagePong.MessagePong
-import observer.Subscriber
+import viewer.Viewer$
 import shared.ResourcePool
 import spray.can.Http
 import spray.can.server.UHttp
 import spray.routing.SimpleRoutingApp
-import tictactoe.{ObservableState, GameState, TicTacToe}
+import tictactoe.{GameView, GameState, TicTacToe}
 import web._
 
 
