@@ -2,16 +2,14 @@ import akka.actor.ActorSystem
 import akka.io.IO
 import cursors.Cursors
 import messagePong.MessagePong
-import viewer.Viewer$
 import shared.ResourcePool
 import spray.can.Http
 import spray.can.server.UHttp
-import spray.routing.SimpleRoutingApp
-import tictactoe.{GameView, GameState, TicTacToe}
+import tictactoe.TicTacToe
 import web._
 
 
-object Main extends App with SimpleRoutingApp {
+object Main extends App {
   implicit val system = ActorSystem("sockets")
 
   import system._

@@ -14,16 +14,19 @@ function init() {
         subs[json.id] = true;
         updateTable(json);
         if(json.state == "GameOver") {
-            setTimeout(function() {
-                document.getElementById("content")
-                        .removeChild(document.getElementById(json.id));
-                delete subs[json.id];
-            }, 5000);
+            setTimeout(remElem(json.id), 5000);
         }
     };
     ws.onclose = function (evt) {
         console.log("closed");
     };
+}
+function remElem(elemId) {
+    return function() {
+        document.getElementById("content")
+                .removeChild(document.getElementById(elemId));
+        delete subs[elemId];
+    }
 }
 function updateTable(data) {
     drawField(data.field, document.getElementById(data.id));

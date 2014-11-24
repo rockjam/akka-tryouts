@@ -18,10 +18,10 @@ resolvers ++=  Seq(
   "spray repo" at "http://repo.spray.io/"
 )
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" % "akka-actor_2.11" % "2.3.7",
+  "com.typesafe.akka" % "akka-actor_2.11" % "2.3.7" exclude ("org.scala-lang" , "scala-library"),
   "io.spray" % "spray-can_2.11" % "1.3.2",
   "io.spray" % "spray-routing_2.11" % "1.3.2",
-  "io.spray" % "spray-json_2.11" % "1.3.1",
+  "io.spray" % "spray-json_2.11" % "1.3.1" exclude ("org.scala-lang" , "scala-library"),
   "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3",
   "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 )
