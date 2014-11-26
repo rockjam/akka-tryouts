@@ -1,5 +1,7 @@
 package tictactoe
 
+import shared.{Tie, Win, Game, WrongMove}
+
 trait TicTacToeGame {
   def makeMove(state: GameState, move: GameMove, player: Player) = {
     def calcIndex = move.y * 3 + move.x
@@ -34,11 +36,3 @@ trait TicTacToeGame {
     else if (field.forall(a => a != '-')) Tie else Game
   }
 }
-
-sealed trait Status
-case object Tie extends Status
-case object Win extends Status
-case object Lose extends Status
-case object Game extends Status
-case object New extends Status
-case object WrongMove extends Status

@@ -1,5 +1,8 @@
+package tictactoe
+
+import shared.{Game,Tie,Win}
+
 import org.scalatest.FlatSpec
-import tictactoe.{Game, Win, Tie, TicTacToeGame}
 
 class TicTacToeSpec extends FlatSpec with TicTacToeGame {
 

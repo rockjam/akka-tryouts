@@ -31,7 +31,7 @@ class TicTacToe extends Actor with TicTacToeGame {
       val x = Player('x')
       FIRST ! x
       FIRST ! initialState
-      context.system.eventStream.publish(GameView(self.path.name, initialState.field, InProgress, "Game bagan"))
+      system.eventStream.publish(GameView(self.path.name, initialState.field, InProgress, "Game began"))
 
       become(working(FIRST, x, user, o, initialState) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
@@ -43,12 +43,13 @@ class TicTacToe extends Actor with TicTacToeGame {
         case OWNER =>
           val newState = makeMove(current, move, ownerSign)
           if (newState.status != WrongMove) {
-            context.system.eventStream.publish(GameView(
+            system.eventStream.publish(GameView(
               self.path.name,
               newState.field,
               newState.status match {
                 case Tie | Win | Lose => GameOver
                 case Game | New => InProgress
+                case _ => throw new Error("inconsistent state")
               },
               "Message"))
           }
