@@ -12,4 +12,4 @@ case class Success(status: String = "success") extends Exchange
 
 case class Failure(message: String, status: String = "failure") extends Exchange
 
-trait Exchange//TODO: rename to Exchange
+trait Exchange

@@ -19,16 +19,16 @@ object VirusWarGame {
       throw new Error("wrong field")
   }
 
-
   val initialField:Field = Vector.fill(10,10)('-')
 }
 
 trait VirusWarGame {
 
   def makeMove(move:Move, player:Player, field:Field) =
-    if (canMakeMove(move,player,field)) {
+    if (canMakeMove(move, player, field)) {
       val (x,y) = move
-      val newField = field.updated(y, field(y).updated(x, player))
+      val cc = changedCell(move, player, field).get
+      val newField = field.updated(y, field(y).updated(x, cc))
       (newField, score(newField))
     } else {
       (field, WrongMove)
@@ -36,7 +36,7 @@ trait VirusWarGame {
 
   def score(field:Field):GameMoment = Game//todo - implement
 
-  def isFirstTurn(player:Player, field:Field) =  field.flatten.forall(_ != player)
+  def isFirstTurn(p:Player, f:Field) =  f.flatten.forall(_ != p)
 
   def validNeighborCells(move:Move) = {
     val (x,y) = move
@@ -52,12 +52,13 @@ trait VirusWarGame {
     x >= 0 && x <= 9 && y >= 0 && y <= 9
   }
 
-  def freeCell(move:Move, player:Player, field:Field) = {
+  //todo find some good name
+  def changedCell(move:Move, player:Player, field:Field) = {
     val (x,y) = move
     field(y)(x) match {
-      case '-' => true
-      case s if s == opponent(player) => true
-      case _ => false
+      case '-' => Some(player)
+      case s if s == opponent(player) => Some(player.toUpper)
+      case _ => None
     } 
   }
   
@@ -85,6 +86,6 @@ trait VirusWarGame {
       }
     else
       validCell(move) &&
-      freeCell(move, player, field) &&
+      changedCell(move, player, field).isDefined &&
       haveLiveNeighbor(move, player, field)
 }

@@ -2,125 +2,124 @@ package viruswar
 
 import org.scalatest.{Matchers, FlatSpec}
 import VirusWarGame._
+import shared.{WrongMove, Game}
 
 class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
-
-  def emptyField = (1 to 100).foldLeft("")((a,f) => a + "-")
 
   "valid neighbor cells" should "be neighbors of this cell in range between 0 and 9 inclusive" in {
     validNeighborCells((0, 0)) should (
       have size 3
-      and contain allOf((1, 0), (1, 1), (0, 1))
-      and not contain(0, 0))
+        and contain allOf((1, 0), (1, 1), (0, 1))
+        and not contain(0, 0))
 
-    validNeighborCells((1,0)) should (
+    validNeighborCells((1, 0)) should (
       have size 5
-      and contain allOf((0,0), (2,0), (2,1), (1,1), (0,1))
-      and not contain (1,0))
+        and contain allOf((0, 0), (2, 0), (2, 1), (1, 1), (0, 1))
+        and not contain(1, 0))
 
-    validNeighborCells((1,1)) should (
+    validNeighborCells((1, 1)) should (
       have size 8
-      and contain allOf((0,0), (1,0), (2,0), (2,1), (2,2), (1,2), (0,2), (0,1))
-      and not contain (1,1))
+        and contain allOf((0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), (0, 2), (0, 1))
+        and not contain(1, 1))
 
-    validNeighborCells((9,9)) should (
+    validNeighborCells((9, 9)) should (
       have size 3
-      and contain allOf((9,8), (8,9), (8,8))
-      and not contain (9,9))
+        and contain allOf((9, 8), (8, 9), (8, 8))
+        and not contain(9, 9))
   }
 
   "valid cell" should "be cell with x and y in range 0 to 9 inclusive" in {
-    validCell(0,0) should be(true)
-    validCell(3,4) should be(true)
+    validCell(0, 0) should be(true)
+    validCell(3, 4) should be(true)
 
-    validCell(-1,0) should be(false)
-    validCell(10,0) should be(false)
+    validCell(-1, 0) should be(false)
+    validCell(10, 0) should be(false)
   }
 
-  "first turn" should "determine first turn of player on given field" in {
+  "first turn" should "determine if it is first turn of player on given field" in {
     isFirstTurn('x',
-    """----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------""") should be (true)
+      """----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------""") should be(true)
 
     isFirstTurn('x',
-    """x---------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------""") should be (false)
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------""") should be(false)
 
     isFirstTurn('o',
-    """x---------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------""") should be (true)
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------""") should be(true)
 
     isFirstTurn('x',
-    """----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |---------o""") should be (true)
+      """----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""") should be(true)
 
     isFirstTurn('o',
-    """----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |---------o""") should be (false)
+      """----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""") should be(false)
 
     isFirstTurn('x',
-    """x---------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |---------o""") should be (false)
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""") should be(false)
 
     isFirstTurn('o',
-    """x---------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |----------
-      |---------o""") should be (false)
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""") should be(false)
   }
 
   "live neighbors" should
@@ -139,7 +138,7 @@ class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
         |----------
         |----------
         |----------
-        |---------o""") should be (false)
+        |---------o""") should be(false)
 
     haveLiveNeighbor((3, 2), 'x',
       """x---------
@@ -215,8 +214,11 @@ class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
 
   }
 
-  "can make move" should "allow to make right move" in {
-    canMakeMove((0,0), 'x',
+  "can make move" should
+    """allow to make right move and
+       violate to make wrong move
+    """ in {
+    val f0 =
       """----------
         |----------
         |----------
@@ -226,33 +228,13 @@ class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
         |----------
         |----------
         |----------
-        |----------""") should be(true)
+        |----------"""
 
-    canMakeMove((3,1), 'x',
-      """----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------""") should be(false)
+    canMakeMove((0, 0), 'x', f0) should be(true)
+    canMakeMove((3, 1), 'x', f0) should be(false)
+    canMakeMove((9, 9), 'x', f0) should be(false)
 
-    canMakeMove((9,9), 'x',
-      """----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------
-        |----------""") should be(false)
-
-    canMakeMove((0,0), 'x',
+    val f1 =
       """x---------
         |----------
         |----------
@@ -262,8 +244,226 @@ class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
         |----------
         |----------
         |----------
-        |----------""") should be(false)
+        |----------"""
 
+    canMakeMove((0, 0), 'x', f1) should be(false)
+    canMakeMove((9, 9), 'o', f1) should be(true)
+    canMakeMove((3, 2), 'o', f1) should be(false)
+
+    canMakeMove((1, 1), 'x',
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""") should be(true)
+
+    canMakeMove((5, 5), 'x',
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----o----
+        |-----oo---
+        |-------o--
+        |--------o-
+        |---------o""") should be(true)
+
+    val f2 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |-----oo---
+        |-------o--
+        |--------o-
+        |---------o"""
+
+    canMakeMove((5, 6), 'x', f2) should be(true)
+    canMakeMove((5, 5), 'x', f2) should be(false)
+
+    canMakeMove((4, 6), 'x',
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |-----Xo---
+        |-------o--
+        |--------o-
+        |---------o""") should be(true)
+
+    val f3 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |----xXo---
+        |-------o--
+        |--------o-
+        |---------o"""
+
+    canMakeMove((5, 7), 'o', f3) should be(true)
+    canMakeMove((5, 5), 'o', f3) should be(false)
+
+    canMakeMove((4, 6), 'o',
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |----xXo---
+        |-----o-o--
+        |--------o-
+        |---------o""") should be(true)
+
+    canMakeMove((4, 5), 'o',
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |----OXo---
+        |-----o-o--
+        |--------o-
+        |---------o""") should be(true)
+
+  }
+
+  "makeMove" should "return updated field for correct moves" in {
+    val f1 =
+      """----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------""": Field
+
+    val f2 =
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------""": Field
+
+    val f3 =
+      """x---------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |----------
+        |---------o""": Field
+
+    makeMove((0, 0), 'x', f1) should be(f2, Game)
+    makeMove((0, 0), 'x', f2) should be(f2, WrongMove)
+    makeMove((9, 9), 'o', f2) should be(f3, Game)
+
+    val f4 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----o----
+        |-----oo---
+        |-------o--
+        |--------o-
+        |---------o""": Field
+
+    val f5 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |-----oo---
+        |-------o--
+        |--------o-
+        |---------o""": Field
+
+    val f6 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |-----Xo---
+        |-------o--
+        |--------o-
+        |---------o""": Field
+
+    val f7 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |----xXo---
+        |-------o--
+        |--------o-
+        |---------o""":Field
+
+    makeMove((5, 5), 'x', f4) should be(f5, Game)
+    makeMove((5, 6), 'x', f5) should be(f6, Game)
+    makeMove((5, 6), 'x', f6) should be(f6, WrongMove)
+    makeMove((4, 6), 'x', f6) should be(f7, Game)
+
+    val f8 =
+      """x---------
+        |-xx-------
+        |---x------
+        |----x-----
+        |----x-----
+        |-----X----
+        |----xXo---
+        |-----o-o--
+        |--------o-
+        |---------o""":Field
+
+    val f9 =
+      """x---------
+        |-xx-------
+        |---x------
+        |
+        |----x-----
+        |----x-----
+        |-----X----
+        |----OXo---
+        |-----o-o--
+        |--------o-
+        |---------o""":Field
+
+    makeMove((5, 7), 'o', f7) should be(f8, Game)
+    makeMove((5, 5), 'o', f7) should be(f7, WrongMove)
+    makeMove((4, 6), 'o', f8) should be(f9, Game)
   }
 
 }
