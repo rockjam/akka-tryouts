@@ -8,7 +8,6 @@ import spray.can.server.UHttp
 import tictactoe.TicTacToe
 import web._
 
-
 object Main extends App {
   implicit val system = ActorSystem("sockets")
 

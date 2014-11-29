@@ -452,7 +452,6 @@ class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
       """x---------
         |-xx-------
         |---x------
-        |
         |----x-----
         |----x-----
         |-----X----

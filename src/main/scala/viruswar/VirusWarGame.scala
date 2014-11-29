@@ -1,6 +1,6 @@
 package viruswar
 
-import shared.{WrongMove, Game, GameMoment}
+import shared._
 
 //TODO replace Vectors with List for uniform and convinience
 object VirusWarGame {
@@ -29,13 +29,28 @@ trait VirusWarGame {
       val (x,y) = move
       val cc = changedCell(move, player, field).get
       val newField = field.updated(y, field(y).updated(x, cc))
-      (newField, score(newField))
+      (newField, score(player, newField))
     } else {
       (field, WrongMove)
     }
 
-  def score(field:Field):GameMoment = Game//todo - implement
+  def score(player: Player, field: Field): GameMoment = field match {
+    //game field is full. need to find out, who won
+    case f if f.flatten.forall(_ != '-') =>
+      val pScore = calculateLiveCells(player, field)
+      val opScore = calculateLiveCells(opponent(player), field)
+      pScore compare opScore match {
+        case 1 => Win
+        case -1 => Lose
+        case 0 => Tie
+      }
+    case f if !isFirstTurn(opponent(player), f) && f.flatten.forall(_ != opponent(player)) => Win
+    case _ => Game
+  }
 
+  def calculateLiveCells(p:Player, f:Field) = f.foldLeft(0)((acc,v) => acc + v.count(_==p))
+
+  //turn into HOF maybe?
   def isFirstTurn(p:Player, f:Field) =  f.flatten.forall(_ != p)
 
   def validNeighborCells(move:Move) = {
