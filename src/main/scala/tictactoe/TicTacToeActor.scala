@@ -3,11 +3,11 @@ package tictactoe
 import akka.actor.{Actor, ActorRef, Props}
 import shared._
 
-object TicTacToe {
-  def props() = Props[TicTacToe]
+object TicTacToeActor {
+  def props() = Props[TicTacToeActor]
 }
 
-class TicTacToe extends Actor with TicTacToeGame {
+class TicTacToeActor extends Actor with TicTacToeGame {
   import context._
 
   val initialState = GameState("---------", New)

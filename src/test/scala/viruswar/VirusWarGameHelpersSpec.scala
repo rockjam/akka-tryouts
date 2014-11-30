@@ -1,10 +1,10 @@
 package viruswar
 
 import org.scalatest.{Matchers, FlatSpec}
-import VirusWarGame._
+import VirusWarGameHelpers._
 import shared.{WrongMove, Game}
 
-class VirusWarGameSpec extends FlatSpec with Matchers with VirusWarGame {
+class VirusWarGameHelpersSpec extends FlatSpec with Matchers with VirusWarGameHelpers {
 
   "valid neighbor cells" should "be neighbors of this cell in range between 0 and 9 inclusive" in {
     validNeighborCells((0, 0)) should (

@@ -5,14 +5,14 @@ import messagePong.MessagePong
 import shared.ResourcePool
 import spray.can.Http
 import spray.can.server.UHttp
-import tictactoe.TicTacToe
+import tictactoe.TicTacToeActor
 import web._
 
 object Main extends App {
   implicit val system = ActorSystem("sockets")
 
   import system._
-  actorOf(ResourcePool.props(TicTacToe.props()), "tic-tac-toe-resources")
+  actorOf(ResourcePool.props(TicTacToeActor.props()), "tic-tac-toe-resources")
   actorOf(ResourcePool.props(MessagePong.props()), "message-pong-resources")
   actorOf(ResourcePool.props(Cursors.props()), "cursors-resources")
 
