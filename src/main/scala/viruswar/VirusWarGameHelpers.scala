@@ -23,7 +23,7 @@ object VirusWarGameHelpers {
 
 trait VirusWarGameHelpers {
 
-  def makeMove(move:Move, player:Player, field:Field) =
+  def makeMove(move:Move, player:_Player, field:Field) =
     if (canMakeMove(move, player, field)) {
       val (x,y) = move
       val cc = changedCell(move, player, field).get
@@ -33,8 +33,8 @@ trait VirusWarGameHelpers {
       (field, WrongMove)
     }
 
-  def score(player: Player, field: Field): GameMoment = {
-    def calculateLiveCells(p:Player) = field.foldLeft(0)((acc,v) => acc + v.count(_==p))
+  def score(player: _Player, field: Field): GameMoment = {
+    def calculateLiveCells(p:_Player) = field.foldLeft(0)((acc,v) => acc + v.count(_==p))
     field match {
       //game field is full. need to find out, who won
       case f if f.flatten.forall(_ != '-') =>
@@ -51,7 +51,7 @@ trait VirusWarGameHelpers {
   }
 
   //turn into HOF maybe?
-  def isFirstTurn(p:Player, f:Field) =  f.flatten.forall(_ != p)
+  def isFirstTurn(p:_Player, f:Field) =  f.flatten.forall(_ != p)
 
   def validNeighborCells(move:Move) = {
     val (x,y) = move
@@ -68,7 +68,7 @@ trait VirusWarGameHelpers {
   }
 
   //todo find some good name
-  def changedCell(move:Move, player:Player, field:Field) = {
+  def changedCell(move:Move, player:_Player, field:Field) = {
     val (x,y) = move
     field(y)(x) match {
       case '-' => Some(player)
@@ -77,9 +77,9 @@ trait VirusWarGameHelpers {
     } 
   }
   
-  def opponent(player:Player) = if (player == 'x') 'o' else 'x'
+  def opponent(player:_Player) = if (player == 'x') 'o' else 'x'
 
-  def haveLiveNeighbor(cell:Move, player:Player, field:Field):Boolean = {
+  def haveLiveNeighbor(cell:Move, player:_Player, field:Field):Boolean = {
     def loop(xs: IndexedSeq[Move]): Boolean = xs match {
       case Vector() => false
       case (x, y) +: tail => field(y)(x) match {
@@ -92,7 +92,7 @@ trait VirusWarGameHelpers {
   }
 
   //isValidMove
-  def canMakeMove(move: Move, player: Player, field: Field): Boolean =
+  def canMakeMove(move: Move, player: _Player, field: Field): Boolean =
     if (isFirstTurn(player, field))
       (move, player) match {
         case ((0, 0), 'x') => true

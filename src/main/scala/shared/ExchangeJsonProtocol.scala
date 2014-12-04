@@ -3,7 +3,6 @@ package shared
 import cursors.Coordinates
 import messagePong.Message
 import spray.json._
-import tictactoe.{GameMove, GameState, Player}
 
 object ExchangeJsonProtocol extends DefaultJsonProtocol {
 
@@ -14,7 +13,10 @@ object ExchangeJsonProtocol extends DefaultJsonProtocol {
       case f: Failure => f.toJson
       case r: Player =>  r.toJson
       case g: GameMove => g.toJson
-      case g: GameState => JsObject("field" -> JsString(g.field), "status" -> JsString(g.status.toString))
+      case tgs: tictactoe.GameState => JsObject("field" -> JsString(tgs.field), "status" -> JsString(tgs.status.toString))
+      case vgs: viruswar.GameState => JsObject(
+        "field" -> JsArray(vgs.field.map(e => JsArray(e.map(x => JsString(x.toString))))),
+        "status" -> JsString(vgs.status.toString))
       case c: Coordinates => c.toJson
     }
   }

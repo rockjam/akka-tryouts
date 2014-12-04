@@ -9,7 +9,7 @@ function init() {
     ws.onmessage = function (evt) {
         json = JSON.parse(evt.data);
         if (!subs[json.id]) {
-            createTable(json.id);
+            createField(json.id);
         }
         subs[json.id] = true;
         updateTable(json);
@@ -58,7 +58,7 @@ function visualize(elem, sign) {
         elem.appendChild(pic);
     }
 }
-function createTable(id) {
+function createField(id) {
     var table = document.createElement("table");
     table.setAttribute("id", id);
     for(var i = 0; i < 3; i++) {

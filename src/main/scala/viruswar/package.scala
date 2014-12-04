@@ -1,6 +1,5 @@
-
 package object viruswar {
-  type Move = (Int,Int)
-  type Player = Char
+  type Move = (Int, Int)
   type Field = Vector[Vector[Char]]
+  type _Player = Char
 }

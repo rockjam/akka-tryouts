@@ -9,25 +9,11 @@ object TicTacToeWorker {
   def props(serverConnection: ActorRef) = Props(classOf[TicTacToeWorker], serverConnection)
 }
 
-class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor with WebSocketBase {
+class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor with WebSocketBase with StaticRoute {
   override def pool = context actorSelection "akka://sockets/user/tic-tac-toe-resources"
 
   override def businessLogicNoUpgrade = runRoute {
-    pathPrefix("js") {
-      get {
-        getFromResourceDirectory("js")
-      }
-    } ~
-    pathPrefix("css") {
-      get {
-        getFromResourceDirectory("css")
-      }
-    } ~
-    pathPrefix("images") {
-      get {
-        getFromResourceDirectory("images")
-      }
-    } ~
+    staticRoutes ~
     path("ticTacToe") {
       getFromResource("ticTacToe.html")
     }

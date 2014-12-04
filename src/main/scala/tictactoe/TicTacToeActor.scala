@@ -37,10 +37,10 @@ class TicTacToeActor extends Actor with TicTacToeGame {
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
   }: Receive) orElse wrongMessageType
 
-  def working(OWNER: ActorRef, ownerSign: Player, WAITER: ActorRef, waiterSign: Player, current: GameState): Receive = ({
+  def working(owner: ActorRef, ownerSign: Player, waiter: ActorRef, waiterSign: Player, current: GameState): Receive = ({
     case move: GameMove =>
       sender match {
-        case OWNER =>
+        case `owner` =>
           val newState = makeMove(current, move, ownerSign)
           if (newState.status != WrongMove) {
             system.eventStream.publish(GameView(
@@ -55,22 +55,22 @@ class TicTacToeActor extends Actor with TicTacToeGame {
           }
           newState.status match {
             case Game =>
-              OWNER ! Success()
-              WAITER ! newState
-              become(working(WAITER, waiterSign, OWNER, ownerSign, newState))
+              owner ! Success()
+              waiter ! newState
+              become(working(waiter, waiterSign, owner, ownerSign, newState))
             case Tie =>
-              OWNER ! newState
-              WAITER ! newState
+              owner ! newState
+              waiter ! newState
               become(gameOver(newState))
             case Win =>
-              OWNER ! newState
-              WAITER ! newState.copy(status = Lose)
+              owner ! newState
+              waiter ! newState.copy(status = Lose)
               become(gameOver(newState))
             case WrongMove =>
-              OWNER ! newState
+              owner ! newState
             case _ => throw new Error("inconsistent state")
           }
-        case WAITER => sender ! Failure("resource is busy right now, wait for your turn")
+        case `waiter` => sender ! Failure("resource is busy right now, wait for your turn")
       }
     case Join(_) => sender ! Failure("cant join more users")
   }: Receive) orElse wrongMessageType

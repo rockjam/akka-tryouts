@@ -26,7 +26,7 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
     case Join(`first`) => first ! Failure("you have joined already")
     case Join(second) =>
       //todo more elegant solution
-      val (fstPlayer, sndPlayer) = randomize(_Player('x'), _Player('o'))
+      val (fstPlayer, sndPlayer) = randomize(Player('x'), Player('o'))
       val (current, waiting) = randomize(first, second)
 
       current ! fstPlayer
@@ -39,24 +39,24 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
   }
 
-  def game(owner:ActorRef, waiter:ActorRef, current:Field, currentPlayer:_Player):Receive = {
+  def game(owner:ActorRef, waiter:ActorRef, current:Field, currentPlayer:Player):Receive = {
     case move: GameMove =>
       sender match {
         case `owner` =>
-          val newState = makeMove(move.move, currentPlayer.player, current)
-          newState._2 match {
+          val newState = makeMove(move, currentPlayer, current)
+          newState.status match {
             case Game =>
               owner ! Success()
               waiter ! newState
-              become(game(waiter, owner, newState._1, _Player(opponent(currentPlayer.player))))
+              become(game(waiter, owner, newState.field, opponent(currentPlayer)))
             case Tie =>
               owner ! newState
               waiter ! newState
-              become(gameOver(GameState(newState._1, newState._2)))
+              become(gameOver(newState))
             case Win =>
               owner ! newState
-              waiter ! newState.copy(_2 = Lose)
-              become(gameOver(GameState(newState._1, newState._2)))
+              waiter ! newState.copy(status = Lose)
+              become(gameOver(newState))
             case WrongMove =>
               owner ! newState
             case _ => throw new Error("inconsistent state")
@@ -70,10 +70,8 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
     case Join(_) => sender ! Failure("cant join, game over")
     case _:GameMove => sender ! Failure("cant make more moves, game over")
   }
-
 }
 
 trait RandomSwap {
-  val rand = new Random()
-  def randomize[T](x:(T,T)):(T,T) = if(rand.nextBoolean()) x.swap else x
+  def randomize[T](x:(T,T)):(T,T) = if (new Random().nextBoolean()) x.swap else x
 }

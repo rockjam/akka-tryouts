@@ -1,22 +1,14 @@
 package viruswar
 
+import shared.{GameMove, Player}
+
 trait VirusWarGame {
-  private val helper = new VirusWarGameHelpers {}
-  def makeMove(move:Move, player:Player, field:Field) = helper.makeMove(move, player, field)
-  def opponent(player:Player) = helper.opponent(player)
+  def makeMove(m:GameMove, p:Player, f:Field) = {
+    val newState = new VirusWarGameHelpers {}.makeMove((m.x, m.y), p.ch, f)
+    GameState(newState._1, newState._2)
+  }
+  def opponent(p:Player) = p match {
+    case Player('x') => Player('o')
+    case Player('o') => Player('x')
+  }
 }
-//trait VirusWarGameCore {
-//  def makeMove(move:Move, player:Player, field:Field)
-//}
-//
-//class VirusWarGame extends VirusWarGameCore with VirusWarGameHelpers {
-//  override def makeMove(move:Move, player:Player, field:Field) =
-//    if (canMakeMove(move, player, field)) {
-//      val (x,y) = move
-//      val cc = changedCell(move, player, field).get
-//      val newField = field.updated(y, field(y).updated(x, cc))
-//      (newField, score(player, newField))
-//    } else {
-//      (field, WrongMove)
-//    }
-//}

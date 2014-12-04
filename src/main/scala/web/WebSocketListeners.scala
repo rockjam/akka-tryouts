@@ -6,6 +6,7 @@ import viewer.Viewer
 import spray.can.Http
 import tictactoe.{GameView, TicTacToeWorker}
 import cursors.CursorsWorker
+import viruswar.VirusWarWorker
 
 object TWebSocketListener {
   def props() = Props[TWebSocketListener]
@@ -60,3 +61,15 @@ class VWebSocketListener extends Actor {
   }
 }
 
+object VWWebSocketListener {
+  def props() = Props[VWWebSocketListener]
+}
+
+class VWWebSocketListener extends Actor {
+  override def receive = {
+    case _: Http.Connected =>
+      val serverConnection = sender
+      val conn = context.actorOf(VirusWarWorker props serverConnection)
+      serverConnection ! Http.Register(conn)
+  }
+}

@@ -1,6 +1,6 @@
 package tictactoe
 
-import shared.{Tie, Win, Game, WrongMove}
+import shared._
 
 trait TicTacToeGame {
   def makeMove(state: GameState, move: GameMove, player: Player) = {
