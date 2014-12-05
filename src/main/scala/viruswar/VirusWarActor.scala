@@ -15,6 +15,8 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
 
   def receive = notReady
 
+  val maxTurns = 3
+
   def notReady:Receive = {
     case Join(user) =>
       user ! Success()
@@ -35,20 +37,29 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
       waiting ! sndPlayer
       waiting ! Success()
 
-      become(game(current, waiting, initialField, fstPlayer) )
+      become(game(current, waiting, initialField, fstPlayer, maxTurns) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
   }
 
-  def game(owner:ActorRef, waiter:ActorRef, current:Field, currentPlayer:Player):Receive = {
+  def game(owner:ActorRef, waiter:ActorRef, current:Field, currentPlayer:Player, turnsLeft:Int):Receive = {
     case move: GameMove =>
       sender match {
         case `owner` =>
           val newState = makeMove(move, currentPlayer, current)
           newState.status match {
             case Game =>
-              owner ! Success()
-              waiter ! newState
-              become(game(waiter, owner, newState.field, opponent(currentPlayer)))
+              if (turnsLeft == 1) {
+                owner ! Success()
+                waiter ! newState
+                become(game(waiter, owner, newState.field, opponent(currentPlayer), maxTurns))
+              } else {
+                owner ! newState
+                //waiter ! ???
+                // can possibly send status = Game when you should wait, and status = YourTurn
+                // when you should make turn. Or it is possible to pass turns with message.
+                become(game(owner, waiter, newState.field, currentPlayer, turnsLeft - 1))
+              }
+
             case Tie =>
               owner ! newState
               waiter ! newState

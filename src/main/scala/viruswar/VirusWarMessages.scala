@@ -1,5 +1,5 @@
 package viruswar
 
-import shared.GameMoment
+import shared.{Exchange, GameMoment}
 
-case class GameState(field:Field, status:GameMoment)
+case class GameState(field:Field, status:GameMoment) extends Exchange

@@ -10,17 +10,17 @@ function init() {
     ws.onclose = function (evt) {
         publishEvent(evt, "closed")
     };
-    function bindClick() {
-        var trs = document.getElementsByTagName("tr");
-        for (i = 0; i < trs.length; i++) {
-            var tds = trs[i].children;
-            for (j = 0; j < tds.length; j++) {
-                tds[j].addEventListener("click", makeTurn(j, i));
-            }
-        }
-    }
     createField();
     bindClick();
+}
+function bindClick() {
+    var trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        var tds = trs[i].children;
+        for (var j = 0; j < tds.length; j++) {
+            tds[j].addEventListener("click", makeTurn(j, i));
+        }
+    }
 }
 function createField() {
     var table = document.createElement("table");
@@ -49,41 +49,40 @@ function waitingStatusOnMessage (elem) {
     return function(evt) {
         publishEvent(evt, "message");
         json = JSON.parse(evt.data);
-        if (json.status == 'success' || json.status == 'Win' || json.status == 'Tie') {
-            visualize(elem, player);
+        if (json.status == 'success'|| json.status == 'Game' || json.status == 'Win' || json.status == 'Tie') {
+            visualize(elem, player, 30);
         }
         ws.onmessage = ordinaryOnMessage;
     }
 }
-function visualize(elem, sign, s) {
+function visualize(elem, sign, size) {
     if(sign == '-') {
         return false;
     }
     while(elem.firstChild) {
         elem.removeChild(elem.firstChild);
     }
-    var size;
-    if(s) {
-        size = s;
-    } else {
-        size = 90;
-    }
-    var pic = new Image(size,size);
+    var pic = new Image(size, size);
     if(sign == 'x') {
         pic.src  = 'images/x.png';
-        elem.appendChild(pic);
+    }
+    if(sign == 'X') {
+        pic.src  = 'images/x1.png';
     }
     if(sign == 'o') {
         pic.src  = 'images/o.png';
-        elem.appendChild(pic);
     }
+    if(sign == 'O') {
+        pic.src  = 'images/o1.png';
+    }
+    elem.appendChild(pic);
 }
 function drawField(field) {
     var trs = document.getElementsByTagName("tr");
-    for (i = 0; i < trs.length; i++) {
+    for (var i = 0; i < trs.length; i++) {
         var tds = trs[i].children;
-        for (j = 0; j < tds.length; j++) {
-            visualize(tds[j], field[i * 3 + j]);
+        for (var j = 0; j < tds.length; j++) {
+            visualize(tds[j], field[i][j], 30);//field[i][j];
         }
     }
 }
@@ -97,6 +96,7 @@ function publishEvent(evt, type) {
     publish(evt.data ? evt.data : "", type);
 }
 function publish(message, type) {
+    console.log(message);
     var text;
     if(type == "opened") {
         text = "Wait for your opponent";
