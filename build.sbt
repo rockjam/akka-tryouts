@@ -1,3 +1,5 @@
+import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
+
 name := "scala-ws"
 version := "1.0"
 sbtVersion := "0.13.7"
@@ -5,8 +7,11 @@ scalaVersion := "2.11.4"
 mainClass := Some("Main")
 incOptions := incOptions.value.withNameHashing(true)
 updateOptions := updateOptions.value.withCachedResolution(true)
-import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 promptTheme := ScalapenosTheme
+javaOptions ++= Seq(
+  "-XX:+UseParallelGC",
+  "-noverify"
+)
 scalacOptions ++= Seq(
   "-Ydelambdafy:method",
   "-target:jvm-1.7",
@@ -26,3 +31,5 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 )
 seq(Revolver.settings: _*)
+
+addCommandAlias("start", ";re-start;~products")

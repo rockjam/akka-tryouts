@@ -45,16 +45,6 @@ function ordinaryOnMessage(evt) {
         player = json.ch;
     }
 }
-function waitingStatusOnMessage (elem) {
-    return function(evt) {
-        publishEvent(evt, "message");
-        json = JSON.parse(evt.data);
-        if (json.status == 'success'|| json.status == 'Game' || json.status == 'Win' || json.status == 'Tie') {
-            visualize(elem, player, 30);
-        }
-        ws.onmessage = ordinaryOnMessage;
-    }
-}
 function visualize(elem, sign, size) {
     if(sign == '-') {
         return false;
@@ -88,7 +78,6 @@ function drawField(field) {
 }
 function makeTurn(x_move, y_move) {
     return function aux() {
-        ws.onmessage = waitingStatusOnMessage(this);
         ws.send(JSON.stringify({x: x_move, y: y_move}));
     }
 }
@@ -103,7 +92,7 @@ function publish(message, type) {
     }
     if(type == "message") {
         var mess = JSON.parse(message);
-        if(mess.status == "success") {
+        if(mess.status == "success" || mess.status == "Game") {
             text = "Wait for your turn";
         }
         if(mess.status == "failure") {
@@ -112,7 +101,7 @@ function publish(message, type) {
         if(mess.status == "New") {
             text = "Game began, your turn";
         }
-        if(mess.status == "Game") {
+        if(mess.status == "YourTurn") {
             text = "Your turn";
         }
         if(mess.status == "Win") {

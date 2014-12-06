@@ -19,7 +19,7 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
 
   def notReady:Receive = {
     case Join(user) =>
-      user ! Success()
+      user ! Success()//should we use Success at all?
       become(waitingForUser(user))
     case _:GameMove => sender ! Failure("resource is not ready yet")
   }
@@ -29,15 +29,15 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
     case Join(second) =>
       //todo more elegant solution
       val (fstPlayer, sndPlayer) = randomize(Player('x'), Player('o'))
-      val (current, waiting) = randomize(first, second)
+      val (owner, waiter) = randomize(first, second)
 
-      current ! fstPlayer
-      current ! GameState(initialField, New)
+      owner ! fstPlayer
+      owner ! GameState(initialField, New)
 
-      waiting ! sndPlayer
-      waiting ! Success()
+      waiter ! sndPlayer
+      waiter ! Success()
 
-      become(game(current, waiting, initialField, fstPlayer, maxTurns) )
+      become(game(owner, waiter, initialField, fstPlayer, maxTurns) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
   }
 
@@ -49,17 +49,16 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
           newState.status match {
             case Game =>
               if (turnsLeft == 1) {
-                owner ! Success()
-                waiter ! newState
+                owner ! newState
+                waiter ! newState.copy(status = YourTurn)
                 become(game(waiter, owner, newState.field, opponent(currentPlayer), maxTurns))
               } else {
-                owner ! newState
-                //waiter ! ???
+                owner ! newState.copy(status = YourTurn)
+                waiter ! newState
                 // can possibly send status = Game when you should wait, and status = YourTurn
                 // when you should make turn. Or it is possible to pass turns with message.
                 become(game(owner, waiter, newState.field, currentPlayer, turnsLeft - 1))
               }
-
             case Tie =>
               owner ! newState
               waiter ! newState

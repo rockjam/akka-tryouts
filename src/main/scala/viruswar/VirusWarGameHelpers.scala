@@ -50,8 +50,7 @@ trait VirusWarGameHelpers {
     }
   }
 
-  //turn into HOF maybe?
-  def isFirstTurn(p:_Player, f:Field) =  f.flatten.forall(_ != p)
+  def isFirstTurn(p:_Player, f:Field) = f.flatten.forall { e => e != p && (e == '-' || e == opponent(p)) }
 
   def validNeighborCells(move:Move) = {
     val (x,y) = move
@@ -72,23 +71,30 @@ trait VirusWarGameHelpers {
     val (x,y) = move
     field(y)(x) match {
       case '-' => Some(player)
-      case s if s == opponent(player) => Some(player.toUpper)
+      case s if s == opponent(player) => Some(capturedBy(player))
       case _ => None
-    } 
-  }
-  
-  def opponent(player:_Player) = if (player == 'x') 'o' else 'x'
-
-  def haveLiveNeighbor(cell:Move, player:_Player, field:Field):Boolean = {
-    def loop(xs: IndexedSeq[Move]): Boolean = xs match {
-      case Vector() => false
-      case (x, y) +: tail => field(y)(x) match {
-        case p if p == player => true
-        case p if p == player.toUpper => haveLiveNeighbor((x, y), player, field)
-        case _ => loop(tail)
-      }
     }
-    loop(validNeighborCells(cell))
+  }
+
+  def opponent(p:_Player) = if (p == 'x') 'o' else 'x'
+
+  def capturedBy(p:_Player) = p.toUpper
+
+  def haveLiveNeighbor(cell:Move, player:_Player, field:Field) = {
+    def checkNeighborsFor(cell: Move, except: Seq[Move]): Boolean = {
+      def loop(xs: Seq[Move]): Boolean = xs match {
+        case Seq() => false
+        case (x, y) +: tail =>
+          field(y)(x) match {
+            case p if p == player => true
+            case p if p == capturedBy(player) => checkNeighborsFor((x, y), cell +: except) || loop(tail)
+            case _ => loop(tail)
+          }
+      }
+      val cells = validNeighborCells(cell)
+      loop(cells diff except)
+    }
+    checkNeighborsFor(cell, Seq())
   }
 
   //isValidMove

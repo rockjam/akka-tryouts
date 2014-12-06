@@ -2,7 +2,7 @@ package viruswar
 
 import org.scalatest.{Matchers, FlatSpec}
 import VirusWarGameHelpers._
-import shared.{WrongMove, Game}
+import shared.{Win, WrongMove, Game}
 
 class VirusWarGameHelpersSpec extends FlatSpec with Matchers with VirusWarGameHelpers {
 
@@ -340,6 +340,18 @@ class VirusWarGameHelpersSpec extends FlatSpec with Matchers with VirusWarGameHe
         |--------o-
         |---------o""") should be(true)
 
+    canMakeMove((2,7), 'x',
+      """xX--------
+        |-OXXXX----
+        |-OOOOX----
+        |-xOOXX----
+        |-xOXO-----
+        |-xOOXX----
+        |-XOOXXX---
+        |XXoOxOXX--
+        |-X-oX--XX-
+        |--Xo-oo--X""") should be (true)
+
   }
 
   "makeMove" should "return updated field for correct moves" in {
@@ -463,6 +475,48 @@ class VirusWarGameHelpersSpec extends FlatSpec with Matchers with VirusWarGameHe
     makeMove((5, 7), 'o', f7) should be(f8, Game)
     makeMove((5, 5), 'o', f7) should be(f7, WrongMove)
     makeMove((4, 6), 'o', f8) should be(f9, Game)
+
+    val f10 =
+      """x---------
+        |-x----x---
+        |--x--x----
+        |--x-x-----
+        |---O------
+        |----O-----
+        |-----o----
+        |------oo--
+        |--------o-
+        |---------o""": Field
+
+    val f11 =
+      """x---------
+        |-x----x---
+        |--x--x----
+        |--x-x-----
+        |---O------
+        |---oO-----
+        |-----o----
+        |------oo--
+        |--------o-
+        |---------o""":Field
+
+    //this case caused to stack overflow
+    makeMove((3,5), 'o',f10) should be (f11, Game)
   }
+
+  "score" must "tell whether we should continue game, or some player won" in {
+    score('x',
+      """x---------
+        |xO--------
+        |--O-------
+        |--OO------
+        |---OOX----
+        |---OOXX---
+        |OOOOOOOXX-
+        |OxOOOOXXX-
+        |XXXXOOXXXX
+        |XXXXXXXXXX""") should be (Win)
+  }
+
 
 }

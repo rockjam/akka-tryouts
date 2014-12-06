@@ -7,3 +7,5 @@ case object Lose extends GameMoment
 case object Game extends GameMoment
 case object New extends GameMoment
 case object WrongMove extends GameMoment
+
+case object YourTurn extends GameMoment
