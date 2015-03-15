@@ -42,7 +42,7 @@ val app = crossProject.
       "io.spray" %% "spray-can" % "1.3.2",
       "io.spray" %% "spray-routing" % "1.3.2",
       "io.spray" %% "spray-json" % "1.3.1" exclude ("org.scala-lang" , "scala-library"),
-      "com.wandoulabs.akka" %% "spray-websocket" % "0.1.4",
+      "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test"
     )
   )
@@ -54,5 +54,4 @@ lazy val appJVM = app.jvm.
     (resources in Compile) += (fastOptJS in(appJS, Compile)).value.data
   )
 
-//addCommandAlias("start", ";appJVM/re-start; ~appJVM/products~appJVM/products")
-addCommandAlias("start", ";appJVM/re-start")
+addCommandAlias("start", ";appJVM/re-start; ~appJVM/products")
