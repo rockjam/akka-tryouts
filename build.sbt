@@ -9,7 +9,7 @@ lazy val commonSetting = Seq(
     "spray repo" at "http://repo.spray.io/"
   ),
   version := "1.0",
-  sbtVersion := "0.13.8-RC1",
+  sbtVersion := "0.13.8",
   scalaVersion := "2.11.6",
   incOptions := incOptions.value.withNameHashing(true),
   updateOptions := updateOptions.value.withCachedResolution(true)

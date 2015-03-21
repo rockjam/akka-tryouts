@@ -6,10 +6,10 @@ import org.scalajs.dom._
 case class Point(x:Double, y:Double)
 
 @JSExport
-object App {
+object Cursors {
 
   @JSExport
-  def cursors(canvas: html.Canvas) = {
+  def main(canvas: html.Canvas) = {
 
     var ownCoord = Point(0,0)
     var alienCoord = Point(0,0)
