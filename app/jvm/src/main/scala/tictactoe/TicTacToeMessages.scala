@@ -1,10 +1,6 @@
 package tictactoe
 
-import shared.{GameMoment, Exchange}
 import spray.json._
-
-//TODO add WinGameState(field, winCells, status)
-case class GameState(field: String, status: GameMoment) extends Exchange
 
 case class GameView(id:String, field:String, state:ViewState, message:String)
 

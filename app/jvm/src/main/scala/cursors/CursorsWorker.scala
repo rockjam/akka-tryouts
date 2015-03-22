@@ -1,7 +1,7 @@
 package cursors
 
 import akka.actor.{ActorSelection, Props, ActorRef}
-import shared.{Exchange, WebSocketBase, StaticRoute}
+import shared.{SharedExchange, Coordinates, WebSocketBase, StaticRoute}
 import spray.json._
 import spray.routing.HttpServiceActor
 
@@ -19,7 +19,7 @@ class CursorsWorker(val serverConnection: ActorRef) extends HttpServiceActor wit
     }
   }
 
-  override def convertRequest[T >: Exchange](text: String): T = {
+  override def convertRequestFromClient[T >: SharedExchange](text: String): T = {
     import shared.ExchangeJsonProtocol._
     text.parseJson.convertTo[Coordinates]
   }

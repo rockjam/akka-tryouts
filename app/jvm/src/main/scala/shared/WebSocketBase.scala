@@ -1,7 +1,7 @@
 package shared
 
 import akka.actor.{Actor, ActorRef, ActorSelection}
-import akka.io.Tcp.{Closed, PeerClosed}
+import akka.io.Tcp._
 import spray.can.websocket.WebSocketServerWorker
 import spray.can.websocket.frame.{BinaryFrame, CloseFrame, TextFrame}
 import spray.http.HttpRequest
@@ -16,10 +16,10 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
 
   override def businessLogic = notReady
 
-  def convertRequest[T >: Exchange](text: String): T
+  def convertRequestFromClient[T >: SharedExchange](text: String): T
 
   def notReady: Receive = {
-    case TextFrame(text) if (text utf8String) startsWith "join"  =>
+    case TextFrame(text) if upickle.read[SharedExchange](text.utf8String) == Start  =>
       pool ! AcquireResource
       context become waitingForResource
     case TextFrame(_) =>
@@ -42,11 +42,9 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
       val failure = Failure("already acquired resource")
       send(TextFrame(failure.toJson.toString))
     case TextFrame(text) =>
-      shared ! convertRequest(text utf8String)
-    case m: Exchange =>
-      import ExchangeJsonProtocol._
-      val json = m.toJson
-      send(TextFrame(json toString))
+      shared ! convertRequestFromClient(text utf8String)
+    case m: SharedExchange =>
+      send(TextFrame(upickle.write[SharedExchange](m)))
     case CloseFrame(_, _) | PeerClosed | Closed =>
       context stop shared
       context stop self

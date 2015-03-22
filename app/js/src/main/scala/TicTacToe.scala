@@ -1,8 +1,8 @@
 import org.scalajs.dom._
 import org.scalajs.dom.ext.PimpedNodeList
 import org.scalajs.dom.html.Image
+import shared._
 
-import scala.scalajs.js.JSON
 import scala.scalajs.js.annotation.JSExport
 
 @JSExport
@@ -11,39 +11,41 @@ object TicTacToe {
   @JSExport
   def main(body: html.Div) = {
     //assigned once - possibly not var
-    var player = "-"
+    var player = '-'
     val ws = new WebSocket("ws://localhost:9001")
 
     ws.onopen = (e: Event) => {
-      publishEvent(e, "opened")
-      ws.send("join")
+      publishEvent(Opened)
+      ws.send(upickle.write(Start))
     }
 
     ws.onmessage = ordinaryOnMessage _
 
-    ws.onclose = (evt: Event) => publishEvent(evt, "closed")
+    ws.onclose = (evt: Event) => publishEvent(Closed)
 
     def makeTurn(td: Node, x: Int, y: Int) = {
       ws.onmessage = waitingStatusOnMessage(td)
-      ws.send(JSON.stringify(JSON.parse("{\"x\": %d, \"y\": %d}" format(x, y))))
+      ws.send(upickle.write(GameMove(x,y)))
     }
 
     def ordinaryOnMessage(evt: MessageEvent) = {
-      publishEvent(evt, "message")
-      val json = JSON.parse(evt.data.toString)
-      if (!scalajs.js.isUndefined(json.field)) {
-        drawField(json.field.toString)
-      }
-      if (!scalajs.js.isUndefined(json.ch)) {
-        player = json.ch.toString
+      val ex = upickle.read[SharedExchange](evt.data.toString)
+      publishEvent(ex)
+      ex match {
+        case GameState(field, status) => drawField(field)
+        case Player(ch) =>
+          player = ch
+          visualize(document.getElementById("sign"), player, 30)
+        case _ => ""
       }
     }
 
     def waitingStatusOnMessage (elem:Node) = (evt: MessageEvent) => {
-      publishEvent(evt, "message")
-      val json = JSON.parse(evt.data.toString)
-      if (json.status.toString == "success" || json.status.toString == "Win" || json.status.toString == "Tie") {
-        visualize(elem, player)
+      val ex = upickle.read[SharedExchange](evt.data.toString)
+      publishEvent(ex)
+      ex match {
+        case Success(_) | GameState(_,Win) | GameState(_,Tie) => visualize(elem, player)
+        case _ => ""
       }
       ws.onmessage = ordinaryOnMessage _
     }
@@ -58,19 +60,19 @@ object TicTacToe {
     )
 
     def drawField(field: String) = transformField (
-        (td: Node, i: Int, j: Int) => visualize(td, field(3*i+j).toString)
+        (td: Node, i: Int, j: Int) => visualize(td, field(3*i+j))
     )
 
-    def visualize(elem: Node, sign: String, size: Int = 90) = {
+    def visualize(elem: Node, sign: Char, size: Int = 90) = {
       val pic = document.createElement("img").asInstanceOf[Image]
       pic.height = size
       pic.width = size
 
       pic.src = sign match {
-        case "x" => "images/x.png"
-        case "X" => "images/x1.png"
-        case "o" => "images/o.png"
-        case "O" => "images/o1.png"
+        case 'x' => "images/x.png"
+        case 'X' => "images/x1.png"
+        case 'o' => "images/o.png"
+        case 'O' => "images/o1.png"
         case _ => ""
       }
 
@@ -81,32 +83,24 @@ object TicTacToe {
       }
     }
 
-    def publishEvent(message: Event, `type`: String) = {
-      val text = message match {
-        case m: MessageEvent =>
-          val data = JSON.parse(m.data.toString)
-          //TODO возможно место не тут
-          if (!scalajs.js.isUndefined(data.ch)) {
-            val sign = document.getElementById("sign")
-            visualize(sign, data.ch.toString, 40)
-            ""
-          } else {
-            data.status.toString match {
-              case "success" => "Wait for your turn"
-              case "failure" => data.message.toString
-              case "New" => "Game began, your turn"
-              case "Game" => "Your turn"
-              case "Win" => "Congratulations, you win!"
-              case "Lose" => "Bad luck, you lose!"
-              case "Tie" => "Game over, it is tie"
-              case "WrongMove" => "Wrong Move, bastard"
-            }
-          }
-        case _ if `type` == "opened" => "Wait for your opponent"
+    def publishEvent(message: SharedExchange) =
+      document.getElementById("messages").innerHTML = message match {
+        case Success(_) => "Wait for your turn"
+        case Failure(m, _) => m
+        case GameState(_, status) => status match {
+          case New => "Game began, your turn"
+          case Game => "Your turn"
+          case Win => "Congratulations, you win!"
+          case Lose => "Bad luck, you lose!"
+          case Tie => "Game over, it is tie"
+          case WrongMove => "Wrong Move, bastard"
+        }
+
+        case Opened => "Wait for your turn"
+        case Closed => "Closed, reload page please"
+
         case _ => ""
       }
-      document.getElementById("messages").innerHTML = text
-    }
 
     bindClick()
   }

@@ -32,7 +32,7 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
       val (owner, waiter) = randomize(first, second)
 
       owner ! fstPlayer
-      owner ! GameState(initialField, New)
+      owner ! VirusWarGameState(initialField, New)
 
       waiter ! sndPlayer
       waiter ! Success()
@@ -76,7 +76,7 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
     case Join(_) => sender ! Failure("cant join more users")
   }
 
-  def gameOver(finalState: GameState):Receive = {
+  def gameOver(finalState: VirusWarGameState):Receive = {
     case Join(_) => sender ! Failure("cant join, game over")
     case _:GameMove => sender ! Failure("cant make more moves, game over")
   }

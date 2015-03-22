@@ -19,7 +19,10 @@ val app = crossProject.
   settings(commonSetting: _*).
   settings(
     name := "scala-ws",
-    unmanagedSourceDirectories in Compile += baseDirectory.value / "shared" / "main" / "scala"
+    unmanagedSourceDirectories in Compile += baseDirectory.value / "shared" / "main" / "scala",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.2.8"
+    )
   ).jsSettings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.8.0"
@@ -41,6 +44,7 @@ val app = crossProject.
       "com.typesafe.akka" %% "akka-actor" % "2.3.9" exclude("org.scala-lang", "scala-library"),
       "io.spray" %% "spray-can" % "1.3.2",
       "io.spray" %% "spray-routing" % "1.3.2",
+      //TODO remove this - use upickle instead
       "io.spray" %% "spray-json" % "1.3.1" exclude ("org.scala-lang" , "scala-library"),
       "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test"

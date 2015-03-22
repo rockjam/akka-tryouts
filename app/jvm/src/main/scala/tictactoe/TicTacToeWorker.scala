@@ -3,7 +3,6 @@ package tictactoe
 import akka.actor.{ActorRef, Props}
 import shared._
 import spray.routing.HttpServiceActor
-import spray.json._
 
 object TicTacToeWorker {
   def props(serverConnection: ActorRef) = Props(classOf[TicTacToeWorker], serverConnection)
@@ -19,9 +18,8 @@ class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor w
     }
   }
 
-  override def convertRequest[T >: Exchange](text: String): T = {
-    import shared.ExchangeJsonProtocol._
-    text.parseJson.convertTo[GameMove]
+  override def convertRequestFromClient[T >: SharedExchange](text: String): T = {
+    upickle.read[GameMove](text)
   }
 
 }

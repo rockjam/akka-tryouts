@@ -1,7 +1,7 @@
 package cursors
 
 import akka.actor.{ActorRef, Actor, Props}
-import shared.{Failure, Success, Join}
+import shared.{Coordinates, Failure, Success, Join}
 
 object Cursors {
   def props() = Props[Cursors]

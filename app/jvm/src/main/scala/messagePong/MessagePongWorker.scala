@@ -1,7 +1,7 @@
 package messagePong
 
 import akka.actor.{ActorRef, Props}
-import shared.{WebSocketBase, Exchange}
+import shared.{Message, WebSocketBase, SharedExchange}
 import spray.json._
 import spray.routing.HttpServiceActor
 
@@ -19,7 +19,7 @@ class MessagePongWorker(val serverConnection: ActorRef) extends HttpServiceActor
     }
   }
 
-  override def convertRequest[T >: Exchange](text: String): T = {
+  override def convertRequestFromClient[T >: SharedExchange](text: String): T = {
     import shared.ExchangeJsonProtocol._
     text.parseJson.convertTo[Message]
   }

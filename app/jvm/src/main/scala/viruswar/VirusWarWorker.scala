@@ -1,7 +1,7 @@
 package viruswar
 
 import akka.actor.{Props, ActorRef}
-import shared.{StaticRoute, GameMove, Exchange, WebSocketBase}
+import shared._
 import spray.routing.HttpServiceActor
 import spray.json._
 
@@ -18,7 +18,7 @@ class VirusWarWorker(val serverConnection: ActorRef) extends HttpServiceActor wi
       getFromResource("viruswar.html")
     }
   }
-  override def convertRequest[T >: Exchange](text: String): T = {
+  override def convertRequestFromClient[T >: SharedExchange](text: String): T = {
     import shared.ExchangeJsonProtocol._
     text.parseJson.convertTo[GameMove]
   }

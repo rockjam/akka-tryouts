@@ -1,20 +1,19 @@
 package shared
 
-import cursors.Coordinates
-import messagePong.Message
 import spray.json._
 
 object ExchangeJsonProtocol extends DefaultJsonProtocol {
 
-  implicit object ExchangeJsonWriter extends RootJsonWriter[Exchange] {
-    def write(input: Exchange) = input match {
+  implicit object ExchangeJsonWriter extends RootJsonWriter[SharedExchange] {
+    def write(input: SharedExchange) = input match {
       case m: Message => m.toJson
       case s: Success => s.toJson
+
       case f: Failure => f.toJson
       case r: Player =>  r.toJson
       case g: GameMove => g.toJson
-      case tgs: tictactoe.GameState => JsObject("field" -> JsString(tgs.field), "status" -> JsString(tgs.status.toString))
-      case vgs: viruswar.GameState => JsObject(
+      case tgs: GameState => JsObject("field" -> JsString(tgs.field), "status" -> JsString(tgs.status.toString))
+      case vgs: VirusWarGameState => JsObject(
         "field" -> JsArray(vgs.field.map(e => JsArray(e.map(x => JsString(x.toString))))),
         "status" -> JsString(vgs.status.toString))
       case c: Coordinates => c.toJson
