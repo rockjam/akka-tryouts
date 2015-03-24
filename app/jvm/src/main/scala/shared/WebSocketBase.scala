@@ -5,7 +5,6 @@ import akka.io.Tcp._
 import spray.can.websocket.WebSocketServerWorker
 import spray.can.websocket.frame.{BinaryFrame, CloseFrame, TextFrame}
 import spray.http.HttpRequest
-import spray.json._
 
 trait WebSocketBase extends Actor with WebSocketServerWorker {
   def serverConnection: ActorRef
@@ -23,8 +22,7 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
       pool ! AcquireResource
       context become waitingForResource
     case TextFrame(_) =>
-      import ExchangeJsonProtocol._
-      send(TextFrame(Failure("resource is not ready yet 1").toJson.toString))
+      send(TextFrame(upickle.write(Failure("resource is not ready yet 1"))))
     case CloseFrame(_, _) => context stop self
   }
 
@@ -32,15 +30,12 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
     case ResourceAcquired(res) => context become ready(res)
     case CloseFrame(_, _) => context stop self
     case _ =>
-      import ExchangeJsonProtocol._
-      send(TextFrame(Failure("resource is not ready yet 2").toJson.toString))
+      send(TextFrame(upickle.write(Failure("resource is not ready yet 2"))))
   }
 
   def ready(shared: ActorRef): Receive = {
-    case TextFrame(text) if (text utf8String) startsWith "join" =>
-      import ExchangeJsonProtocol._
-      val failure = Failure("already acquired resource")
-      send(TextFrame(failure.toJson.toString))
+    case TextFrame(text) if upickle.read[SharedExchange](text.utf8String) == Start  =>
+      send(TextFrame(upickle.write(Failure("already acquired resource"))))
     case TextFrame(text) =>
       shared ! convertRequestFromClient(text utf8String)
     case m: SharedExchange =>

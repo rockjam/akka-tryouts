@@ -4,12 +4,12 @@ import shared._
 import scala.scalajs.js.annotation.JSExport
 
 @JSExport
-object TicTacToe {
+object VirusWar {
 
   @JSExport
-  def main() = {
+  def main(body: html.Div) = {
     var player = '-'
-    val ws = new WebSocket("ws://localhost:9001")
+    val ws = new WebSocket("ws://localhost:9005")
 
     ws.onopen = (e: Event) => {
       publishEvent(Opened)
@@ -20,48 +20,48 @@ object TicTacToe {
 
     ws.onclose = (evt: Event) => publishEvent(Closed)
 
-    def makeTurn(td: Node, x: Int, y: Int) = {
-      ws.onmessage = waitingStatusOnMessage(td)
-      ws.send(upickle.write(GameMove(x,y)))
-    }
-
     def ordinaryOnMessage(evt: MessageEvent) = {
       val ex = upickle.read[SharedExchange](evt.data.toString)
       publishEvent(ex)
       ex match {
-        case GameState(field, _) => drawField(field)
+        case VirusWarGameState(field, _) => drawField(field)
         case Player(ch) =>
           player = ch
-          Common.visualize(document.getElementById("sign"), player, 30)
+          Common.visualize(document.getElementById("sign"), player, 40)
         case _ => ""
       }
-    }
-
-    def waitingStatusOnMessage (elem:Node) = (evt: MessageEvent) => {
-      val ex = upickle.read[SharedExchange](evt.data.toString)
-      publishEvent(ex)
-      ex match {
-        case Success(_) | GameState(_,Win) | GameState(_,Tie) => Common.visualize(elem, player, 90)
-        case _ => ""
-      }
-      ws.onmessage = ordinaryOnMessage _
     }
 
     def bindClick() = Common.transformField(
-      (td: Node, i: Int, j: Int) => td.addEventListener[MouseEvent]("click", (e: MouseEvent) => makeTurn(td, j, i))
+      (td: Node, i: Int, j: Int) => td.addEventListener[MouseEvent]("click", (e: MouseEvent) => makeTurn(j, i))
     )
 
-    def drawField(field: String) = Common.transformField (
-        (td: Node, i: Int, j: Int) => Common.visualize(td, field(3*i+j), 90)
+    def drawField(field:Vector[Vector[Char]]) = Common.transformField (
+      (td: Node, i: Int, j: Int) => Common.visualize(td, field(i)(j), 30)
     )
+
+    def makeTurn(x: Int, y: Int) = ws.send(upickle.write(GameMove(x,y)))
+
+    def createField() = {
+      val table = document.createElement("table")
+      1 to 10 foreach {e =>
+        val tr = document.createElement("tr")
+        table.appendChild(tr)
+        1 to 10 foreach {e =>
+          tr.appendChild(document.createElement("td"))
+        }
+      }
+      body.appendChild(table)
+    }
 
     def publishEvent(message: SharedExchange) =
       document.getElementById("messages").innerHTML = message match {
         case Success(_) => "Wait for your turn"
         case Failure(m, _) => m
-        case GameState(_, status) => status match {
+        case VirusWarGameState(_, status) => status match {
+          case Game => "Wait for your turn"
           case New => "Game began, your turn"
-          case Game => "Your turn"
+          case YourTurn => "Your turn"
           case Win => "Congratulations, you win!"
           case Lose => "Bad luck, you lose!"
           case Tie => "Game over, it is tie"
@@ -74,9 +74,8 @@ object TicTacToe {
         case _ => ""
       }
 
+    createField()
     bindClick()
   }
 
 }
-
-

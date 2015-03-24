@@ -8,7 +8,7 @@ trait StaticRoute extends spray.routing.Directives {
   def staticRoutes = {
     pathPrefix("js") {
       get {
-        getFromResource("scala-ws-fastopt.js")
+        getFromResourceDirectory("js")
       }
     } ~ pathPrefix("css") {
       get {
