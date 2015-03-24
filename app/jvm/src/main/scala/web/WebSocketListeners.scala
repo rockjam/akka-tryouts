@@ -1,10 +1,10 @@
 package web
 
 import akka.actor.{Actor, Props}
-import messagePong.MessagePongWorker
+import shared.GameView
 import viewer.Viewer
 import spray.can.Http
-import tictactoe.{GameView, TicTacToeWorker}
+import tictactoe.TicTacToeWorker
 import cursors.CursorsWorker
 import viruswar.VirusWarWorker
 
@@ -17,19 +17,6 @@ class TWebSocketListener extends Actor {
     case _: Http.Connected =>
       val serverConnection = sender
       val conn = context.actorOf(TicTacToeWorker props serverConnection)
-      serverConnection ! Http.Register(conn)
-  }
-}
-
-object SWebSocketListener {
-  def props() = Props[SWebSocketListener]
-}
-
-class SWebSocketListener extends Actor {
-  override def receive = {
-    case _: Http.Connected =>
-      val serverConnection = sender
-      val conn = context.actorOf(MessagePongWorker props serverConnection)
       serverConnection ! Http.Register(conn)
   }
 }

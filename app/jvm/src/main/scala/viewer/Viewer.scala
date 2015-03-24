@@ -1,12 +1,10 @@
 package viewer
 
 import akka.actor.{ActorRef, Props}
-import shared.StaticRoute
+import shared.{GameView, StaticRoute}
 import spray.can.websocket.WebSocketServerWorker
 import spray.can.websocket.frame.TextFrame
-import spray.json._
 import spray.routing.HttpServiceActor
-import tictactoe.GameView
 
 object Viewer {
   def props(serverConnection: ActorRef) = Props(classOf[Viewer], serverConnection)
@@ -23,10 +21,6 @@ class Viewer(val serverConnection:ActorRef) extends HttpServiceActor with WebSoc
     }
   }
 
-  override def businessLogic = {
-    case x:GameView =>
-      import GameView._
-      send(TextFrame(x.toJson.toString))
-  }
+  override def businessLogic = {case x:GameView => send(TextFrame(upickle.write(x)))}
 
 }

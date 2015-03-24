@@ -6,8 +6,6 @@ case object Start extends SharedExchange
 
 case class Coordinates(x:Int, y:Int) extends SharedExchange
 
-case class Message(text:String, value:Int, status: String = "result") extends SharedExchange
-
 case class VirusWarGameState(field:Vector[Vector[Char]], status:GameMoment) extends SharedExchange
 
 case class GameMove(x:Int, y:Int) extends SharedExchange
@@ -35,3 +33,10 @@ case object New extends GameMoment
 case object WrongMove extends GameMoment
 
 case object YourTurn extends GameMoment
+
+
+case class GameView(id:String, field:String, state:ViewState, message:String)
+
+sealed trait ViewState
+case object InProgress extends ViewState
+case object GameOver extends ViewState
