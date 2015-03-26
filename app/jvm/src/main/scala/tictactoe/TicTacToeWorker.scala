@@ -12,11 +12,7 @@ class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor w
   override def pool = context actorSelection "akka://sockets/user/tic-tac-toe-resources"
 
   override def businessLogicNoUpgrade = runRoute {
-    pathPrefix("js") {
-      get {
-        getFromResource("scala-ws-fastopt.js")
-      }
-    } ~ staticRoutes ~
+    staticRoutes ~
     path("ticTacToe") {
       getFromResource("ticTacToe.html")
     }

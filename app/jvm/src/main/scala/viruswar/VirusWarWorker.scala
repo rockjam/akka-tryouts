@@ -12,11 +12,7 @@ class VirusWarWorker(val serverConnection: ActorRef) extends HttpServiceActor wi
   override def pool = context actorSelection "akka://sockets/user/virus-war-resources"
 
   override def businessLogicNoUpgrade = runRoute {
-    pathPrefix("js") {
-      get {
-        getFromResource("scala-ws-fastopt.js")
-      }
-    } ~ staticRoutes ~
+    staticRoutes ~
     path("viruswar") {
       getFromResource("viruswar.html")
     }

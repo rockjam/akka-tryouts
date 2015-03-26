@@ -6,11 +6,7 @@ trait StaticRoute extends spray.routing.Directives {
   implicit def actorRefFactory: akka.actor.ActorRefFactory
 
   def staticRoutes = {
-    pathPrefix("js") {
-      get {
-        getFromResourceDirectory("js")
-      }
-    } ~ pathPrefix("css") {
+   pathPrefix("css") {
       get {
         getFromResourceDirectory("css")
       }
@@ -18,6 +14,6 @@ trait StaticRoute extends spray.routing.Directives {
       get {
         getFromResourceDirectory("images")
       }
-    }
+    } ~ getFromResourceDirectory(".")
   }
 }

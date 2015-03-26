@@ -15,11 +15,7 @@ class Viewer(val serverConnection:ActorRef) extends HttpServiceActor with WebSoc
   override def receive = handshaking orElse businessLogicNoUpgrade orElse closeLogic
 
   def businessLogicNoUpgrade = runRoute {
-    pathPrefix("js") {
-      get {
-        getFromResource("scala-ws-fastopt.js")
-      }
-    } ~ staticRoutes ~
+    staticRoutes ~
     path("view") {
       getFromResource("view.html")
     }

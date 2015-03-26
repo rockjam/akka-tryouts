@@ -12,11 +12,7 @@ class CursorsWorker(val serverConnection: ActorRef) extends HttpServiceActor wit
   override def pool: ActorSelection = context actorSelection "akka://sockets/user/cursors-resources"
 
   override def businessLogicNoUpgrade: Receive = runRoute {
-    pathPrefix("js") {
-      get {
-        getFromResource("scala-ws-fastopt.js")
-      }
-    } ~ staticRoutes ~
+    staticRoutes ~
     path("cursors") {
       getFromResource("cursors.html")
     }
