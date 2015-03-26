@@ -6,8 +6,4 @@ Currently two games are implemented:
 * Virus war(https://ru.wikipedia.org/wiki/Война_вирусов)
 
 TODO:
-* Complete rules for Win/Lose in virus war
-* Make simple AI for Virus war game
-* Make virus war gameboard look nicer(at least make x and o fit in center of cell)
 * Show currently running games(like localhost:9004/view, but not only for tic tac toe)
-* Split frontend and backend & make frontend easier to develop
