@@ -30,4 +30,16 @@ object Common {
     }
   }
 
+  def createField(size:Int) = {
+    val table = document.createElement("table")
+    1 to size foreach {e =>
+      val tr = document.createElement("tr")
+      table.appendChild(tr)
+      1 to size foreach {e =>
+        tr.appendChild(document.createElement("td"))
+      }
+    }
+    table
+  }
+
 }

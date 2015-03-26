@@ -42,8 +42,8 @@ val app = crossProject.
     mainClass := Some("Main"),
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % "2.3.9" exclude("org.scala-lang", "scala-library"),
-      "io.spray" %% "spray-can" % "1.3.2",
-      "io.spray" %% "spray-routing" % "1.3.2",
+      "io.spray" %% "spray-can" % "1.3.3",
+      "io.spray" %% "spray-routing" % "1.3.3",
       "com.wandoulabs.akka" %% "spray-websocket" % "0.1.3",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test"
     )

@@ -42,18 +42,6 @@ object VirusWar {
 
     def makeTurn(x: Int, y: Int) = ws.send(upickle.write(GameMove(x,y)))
 
-    def createField() = {
-      val table = document.createElement("table")
-      1 to 10 foreach {e =>
-        val tr = document.createElement("tr")
-        table.appendChild(tr)
-        1 to 10 foreach {e =>
-          tr.appendChild(document.createElement("td"))
-        }
-      }
-      body.appendChild(table)
-    }
-
     def publishEvent(message: SharedExchange) =
       document.getElementById("messages").innerHTML = message match {
         case Success(_) => "Wait for your turn"
@@ -74,7 +62,7 @@ object VirusWar {
         case _ => ""
       }
 
-    createField()
+    body.appendChild(Common.createField(10))
     bindClick()
   }
 
