@@ -32,7 +32,7 @@ object VirusWar {
       }
     }
 
-    def bindClick() = Common.transformField(
+    def bindClick() = Common.transformField (
       (td: Node, i: Int, j: Int) => td.addEventListener[MouseEvent]("click", (e: MouseEvent) => makeTurn(j, i))
     )
 

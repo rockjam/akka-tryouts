@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation.JSExport
 object TicTacToe {
 
   @JSExport
-  def main() = {
+  def main(body: html.Div) = {
     var player = '-'
     val ws = new WebSocket("ws://localhost:9001")
 
@@ -52,7 +52,7 @@ object TicTacToe {
     )
 
     def drawField(field: String) = Common.transformField (
-        (td: Node, i: Int, j: Int) => Common.visualize(td, field(3*i+j), 90)
+      (td: Node, i: Int, j: Int) => Common.visualize(td, field(3*i+j), 90)
     )
 
     def publishEvent(message: SharedExchange) =
@@ -74,6 +74,7 @@ object TicTacToe {
         case _ => ""
       }
 
+    body.appendChild(Common.createField(3))
     bindClick()
   }
 

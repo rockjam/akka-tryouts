@@ -1,7 +1,6 @@
 import org.scalajs.dom._
 import org.scalajs.dom.raw.MessageEvent
 import shared.{GameOver, GameView}
-import org.scalajs.dom.ext.PimpedNodeList
 
 import scala.scalajs.js.annotation.JSExport
 
@@ -30,17 +29,10 @@ object Viewer {
       }
     }
 
-    def updateField(view: GameView) = transformField (
+    def updateField(view: GameView) = Common.transformField (
       document.getElementById(view.id),
       (td: Node, i: Int, j: Int) => Common.visualize(td, view.field(3*i+j), 85)
     )
-
-    //перенести в Common. сделать el: => Element, или же не нужно
-    def transformField(el:Element, f: (Node, Int, Int) => Any) = for {
-      (tr, i) <- el.getElementsByTagName("tr").zipWithIndex
-      (td, j) <- tr.asInstanceOf[Document].getElementsByTagName("td").zipWithIndex
-    } yield f(td, i, j)
-
 
   }
 //  @JSExport

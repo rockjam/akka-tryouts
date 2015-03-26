@@ -5,8 +5,10 @@ import org.scalajs.dom.raw.Node
 
 object Common {
 
-  def transformField(f: (Node, Int, Int) => Any) = for {
-    (tr, i) <- document.getElementsByTagName("tr").zipWithIndex
+  def transformField(f: (Node, Int, Int) => Any):Seq[Any] = transformField(document.asInstanceOf[Element], f)
+
+  def transformField(el:Element, f: (Node, Int, Int) => Any):Seq[Any] = for {
+    (tr, i) <- el.getElementsByTagName("tr").zipWithIndex
     (td, j) <- tr.asInstanceOf[Document].getElementsByTagName("td").zipWithIndex
   } yield f(td, i, j)
 
