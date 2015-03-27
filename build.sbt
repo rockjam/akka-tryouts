@@ -1,5 +1,4 @@
 import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
-
 promptTheme := ScalapenosTheme
 
 commonSetting
@@ -51,7 +50,7 @@ val app = crossProject.
 
 lazy val appJS = app.js
 lazy val appJVM = app.jvm.
-  settings(Revolver.settings: _*).
+  settings(Revolver.settings).
   settings(
     (resources in Compile) += (fastOptJS in(appJS, Compile)).value.data
   )
