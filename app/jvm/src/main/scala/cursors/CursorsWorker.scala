@@ -1,7 +1,7 @@
 package cursors
 
 import akka.actor.{ActorRef, ActorSelection, Props}
-import shared.{Coordinates, SharedExchange, StaticRoute, WebSocketBase}
+import shared.{StaticRoute, WebSocketBase}
 import spray.routing.HttpServiceActor
 
 object CursorsWorker {
@@ -12,12 +12,9 @@ class CursorsWorker(val serverConnection: ActorRef) extends HttpServiceActor wit
   override def pool: ActorSelection = context actorSelection "akka://sockets/user/cursors-resources"
 
   override def businessLogicNoUpgrade: Receive = runRoute {
-    staticRoutes ~
     path("cursors") {
       getFromResource("cursors.html")
-    }
+    } ~ staticRoutes
   }
-
-  override def convertRequestFromClient[T >: SharedExchange](text: String): T = upickle.read[Coordinates](text)
 
 }

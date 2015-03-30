@@ -1,18 +1,19 @@
 package shared
 
 sealed trait SharedExchange
+sealed trait GameRepr
 
 case object Start extends SharedExchange
 
 case class Coordinates(x:Int, y:Int) extends SharedExchange
 
-case class VirusWarGameState(field:Vector[Vector[Char]], status:GameMoment) extends SharedExchange
+case class VirusWarGameState(field:Vector[Vector[Char]], status:GameMoment) extends SharedExchange with GameRepr
 
 case class GameMove(x:Int, y:Int) extends SharedExchange
 
 case class Player(ch:Char) extends SharedExchange
 
-case class GameState(field: String, status: GameMoment) extends SharedExchange
+case class GameState(field: String, status: GameMoment) extends SharedExchange with GameRepr
 
 case class Success(status: String = "success") extends SharedExchange
 
@@ -34,8 +35,7 @@ case object WrongMove extends GameMoment
 
 case object YourTurn extends GameMoment
 
-
-case class GameView(id:String, field:String, state:ViewState, message:String)
+case class GameView(id:String, gameState:GameRepr, viewState:ViewState, message:String)
 
 sealed trait ViewState
 case object InProgress extends ViewState

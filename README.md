@@ -4,6 +4,3 @@ Attempt to make a platform that allows you to write turn-based games for two+ pl
 Currently two games are implemented:
 * Tic-Tac-Toe
 * Virus war(https://ru.wikipedia.org/wiki/Война_вирусов)
-
-TODO:
-* Show currently running games(like localhost:9004/view, but not only for tic tac toe)

@@ -3,8 +3,6 @@ import shared.{Coordinates, SharedExchange, Start}
 
 import scala.scalajs.js.annotation.JSExport
 
-case class Point(x:Double, y:Double)
-
 @JSExport
 object Cursors {
 

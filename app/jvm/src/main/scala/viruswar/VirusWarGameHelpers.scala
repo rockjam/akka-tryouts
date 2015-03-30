@@ -57,7 +57,7 @@ trait VirusWarGameHelpers {
     for {
       i <- -1 to 1
       j <- -1 to 1
-      if  !(j == 0 && i == 0) && validCell(x + i, y + j)
+      if  !(j == 0 && i == 0) && validCell( (x + i, y + j) )
     } yield (x + i, y + j)
   }
 

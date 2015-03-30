@@ -38,7 +38,7 @@ class Cursors extends Actor{
     case Join(_) => sender ! Failure("cant join more users")
   }: Receive) orElse wrongMessageType
 
-  def wrongMessageType: Receive = {
+  def wrongMessageType: PartialFunction[Any, Unit] = {
     case _ => sender ! Failure("wrong message type")
   }
 

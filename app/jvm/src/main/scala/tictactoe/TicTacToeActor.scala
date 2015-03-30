@@ -31,7 +31,7 @@ class TicTacToeActor extends Actor with TicTacToeGame {
       val x = Player('x')
       FIRST ! x
       FIRST ! initialState
-      system.eventStream.publish(GameView(self.path.name, initialState.field, InProgress, "Game began"))
+      system.eventStream.publish(GameView(self.path.toString, initialState, InProgress, "Game began"))
 
       become(working(FIRST, x, user, o, initialState) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
@@ -44,8 +44,8 @@ class TicTacToeActor extends Actor with TicTacToeGame {
           val newState = makeMove(current, move, ownerSign)
           if (newState.status != WrongMove) {
             system.eventStream.publish(GameView(
-              self.path.name,
-              newState.field,
+              self.path.toString,
+              newState,
               newState.status match {
                 case Tie | Win | Lose => GameOver
                 case Game | New => InProgress
@@ -80,7 +80,7 @@ class TicTacToeActor extends Actor with TicTacToeGame {
     case _:GameMove => sender ! Failure("cant make more moves, game over")
   }:Receive) orElse wrongMessageType
 
-  def wrongMessageType: Receive = {
+  def wrongMessageType: PartialFunction[Any, Unit] = {
     case _ => sender ! Failure("wrong message type")
   }
 

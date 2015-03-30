@@ -12,12 +12,9 @@ class TicTacToeWorker(val serverConnection: ActorRef) extends HttpServiceActor w
   override def pool = context actorSelection "akka://sockets/user/tic-tac-toe-resources"
 
   override def businessLogicNoUpgrade = runRoute {
-    staticRoutes ~
     path("ticTacToe") {
       getFromResource("ticTacToe.html")
-    }
+    } ~ staticRoutes
   }
-
-  override def convertRequestFromClient[T >: SharedExchange](text: String): T = upickle.read[GameMove](text)
 
 }

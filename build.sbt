@@ -4,9 +4,6 @@ promptTheme := ScalapenosTheme
 commonSetting
 
 lazy val commonSetting = Seq(
-  resolvers ++= Seq(
-    "spray repo" at "http://repo.spray.io/"
-  ),
   version := "1.0",
   sbtVersion := "0.13.8",
   scalaVersion := "2.11.6",
@@ -27,11 +24,17 @@ val app = crossProject.
       "org.scala-js" %%% "scalajs-dom" % "0.8.0"
     )
   ).jvmSettings(
+    resolvers ++= Seq(
+      "spray repo" at "http://repo.spray.io/"
+    ),
     javaOptions ++= Seq(
       "-XX:+UseConcMarkSweepGC",
       "-noverify"
     ),
     scalacOptions ++= Seq(
+      "-Xlint",
+      "-deprecation",
+      "-Xfatal-warnings",
       "-Ydelambdafy:method",
       "-target:jvm-1.7",
       "-feature",

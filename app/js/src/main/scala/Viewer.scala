@@ -1,6 +1,6 @@
 import org.scalajs.dom._
 import org.scalajs.dom.raw.MessageEvent
-import shared.{GameOver, GameView}
+import shared.{GameOver, GameState, GameView, VirusWarGameState}
 
 import scala.scalajs.js.annotation.JSExport
 
@@ -8,35 +8,46 @@ import scala.scalajs.js.annotation.JSExport
 object Viewer {
 
   @JSExport
-  def main() = {
+  def main(body: html.Div) = {
     val ws = new WebSocket("ws://localhost:9004/")
 
-    def inner(currentViews: Set[String] = Set()): Unit = {
+    def setState(currentViews: Set[String]): Unit = {
       ws.onmessage = (evt: MessageEvent) => {
         val view = upickle.read[GameView](evt.data.toString)
-        if (!currentViews.contains(view.id)) {
-          val field = Common.createField(3)
+        //add game field if it is not present
+        if (!currentViews(view.id)) {
+          val (field, cls) = view.gameState match {
+            case _:GameState => (Common.createField(3), "tic-tac-toe")
+            case _:VirusWarGameState => (Common.createField(10), "virus-war")
+          }
           field.setAttribute("id", view.id)
-          document.getElementById("content").appendChild(field)
-          inner(currentViews + view.id)
+          field.setAttribute("class", cls)
+          body.appendChild(field)//replace with passsing in main
+          setState(currentViews + view.id)
         }
         updateField(view)
-        if (view.state == GameOver) {
+        if (view.viewState == GameOver) {
           setTimeout(() => {
-            document.getElementById("content").removeChild(document.getElementById(view.id))
-            inner(currentViews - view.id)
+            body.removeChild(document.getElementById(view.id))
+            setState(currentViews - view.id)
           }, 5000)
         }
       }
 
-      def updateField(view: GameView) = Common.transformField(
-        document.getElementById(view.id),
-        (td: Node, i: Int, j: Int) => Common.visualize(td, view.field(3 * i + j), 85)
-      )
+      def updateField(view: GameView) = {
+        val updater = (cell: Node, cellIndex: Int, rowIndex: Int) => {
+          val (sign, size) = view.gameState match {
+            case GameState(field, _) => (field(3 * cellIndex + rowIndex), 80)
+            case VirusWarGameState(field, _) => (field(rowIndex)(cellIndex), 30)
+          }
+          Common.visualize(cell, sign, size)
+        }
+        Common.transformField (document.getElementById(view.id), updater)
+      }
+
     }
 
-    inner()
-
+    setState(Set.empty)
   }
 
 }

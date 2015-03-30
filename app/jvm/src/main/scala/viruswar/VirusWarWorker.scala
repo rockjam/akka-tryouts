@@ -12,12 +12,9 @@ class VirusWarWorker(val serverConnection: ActorRef) extends HttpServiceActor wi
   override def pool = context actorSelection "akka://sockets/user/virus-war-resources"
 
   override def businessLogicNoUpgrade = runRoute {
-    staticRoutes ~
     path("viruswar") {
       getFromResource("viruswar.html")
-    }
+    } ~ staticRoutes
   }
-
-  override def convertRequestFromClient[T >: SharedExchange](text: String): T = upickle.read[GameMove](text)
 
 }

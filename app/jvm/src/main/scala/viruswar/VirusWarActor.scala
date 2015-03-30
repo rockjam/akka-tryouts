@@ -31,11 +31,13 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
       val (fstPlayer, sndPlayer) = randomize(Player('x'), Player('o'))
       val (owner, waiter) = randomize(first, second)
 
+      val initialState = VirusWarGameState(initialField, New)
       owner ! fstPlayer
-      owner ! VirusWarGameState(initialField, New)
+      owner ! initialState
 
       waiter ! sndPlayer
       waiter ! Success()
+      system.eventStream.publish(GameView(self.path.toString, initialState, InProgress, "Game began"))
 
       become(game(owner, waiter, initialField, fstPlayer, maxTurns) )
     case _:GameMove => sender ! Failure("resource is not ready yet 3")
@@ -46,6 +48,17 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
       sender match {
         case `owner` =>
           val newState = makeMove(move, currentPlayer, current)
+          if (newState.status != WrongMove) {
+            system.eventStream.publish(GameView(
+              self.path.toString,
+              newState,
+              newState.status match {
+                case Tie | Win | Lose => GameOver
+                case Game | New => InProgress
+                case _ => throw new Error("inconsistent state")
+              },
+              "Message"))
+          }
           newState.status match {
             case Game =>
               if (turnsLeft == 1) {
@@ -83,5 +96,6 @@ class VirusWarActor extends Actor with VirusWarGame with RandomSwap {
 }
 
 trait RandomSwap {
-  def randomize[T](x:(T,T)):(T,T) = if (new Random().nextBoolean()) x.swap else x
+  val r = new Random()
+  def randomize[T](x:T, y:T):(T,T) = if (r.nextBoolean()) (x,y) else (y,x)
 }

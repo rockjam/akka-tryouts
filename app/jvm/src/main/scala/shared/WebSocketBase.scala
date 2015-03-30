@@ -15,8 +15,6 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
 
   override def businessLogic = notReady
 
-  def convertRequestFromClient[T >: SharedExchange](text: String): T
-
   def notReady: Receive = {
     case TextFrame(text) if upickle.read[SharedExchange](text.utf8String) == Start  =>
       pool ! AcquireResource
@@ -37,7 +35,7 @@ trait WebSocketBase extends Actor with WebSocketServerWorker {
     case TextFrame(text) if upickle.read[SharedExchange](text.utf8String) == Start  =>
       send(TextFrame(upickle.write(Failure("already acquired resource"))))
     case TextFrame(text) =>
-      shared ! convertRequestFromClient(text utf8String)
+      shared ! upickle.read[SharedExchange](text utf8String)
     case m: SharedExchange =>
       send(TextFrame(upickle.write[SharedExchange](m)))
     case CloseFrame(_, _) | PeerClosed | Closed =>

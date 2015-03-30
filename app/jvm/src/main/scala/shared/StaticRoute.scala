@@ -1,7 +1,5 @@
 package shared
 
-import spray.util._
-
 trait StaticRoute extends spray.routing.Directives {
   implicit def actorRefFactory: akka.actor.ActorRefFactory
 

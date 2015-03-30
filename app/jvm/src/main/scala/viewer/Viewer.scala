@@ -15,10 +15,9 @@ class Viewer(val serverConnection:ActorRef) extends HttpServiceActor with WebSoc
   override def receive = handshaking orElse businessLogicNoUpgrade orElse closeLogic
 
   def businessLogicNoUpgrade = runRoute {
-    staticRoutes ~
     path("view") {
       getFromResource("view.html")
-    }
+    } ~ staticRoutes
   }
 
   override def businessLogic = {case x:GameView => send(TextFrame(upickle.write(x)))}
